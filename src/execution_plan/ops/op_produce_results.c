@@ -9,6 +9,7 @@
 #include "../../resultset/resultset_record.h"
 #include "../../arithmetic/arithmetic_expression.h"
 #include "../../query_executor.h"
+#include "../../rmutil/rmalloc.h"
 
 /* Construct arithmetic expressions from return clause. */
 void _BuildArithmeticExpressions(ProduceResults* op, AST_ReturnNode *return_node, QueryGraph *graph) {
@@ -34,7 +35,7 @@ ResultSetRecord *_ProduceResultsetRecord(ProduceResults* op, const Record r) {
 }
 
 OpBase* NewProduceResultsOp(AST_Query *ast, ResultSet *result_set, QueryGraph* graph) {
-    ProduceResults *produceResults = malloc(sizeof(ProduceResults));
+    ProduceResults *produceResults = rm_malloc(sizeof(ProduceResults));
     produceResults->ast = ast;
     produceResults->result_set = result_set;
     produceResults->refreshAfterPass = 0;

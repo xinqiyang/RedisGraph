@@ -7,6 +7,7 @@
 
 #include "./ast_common.h"
 #include "../value.h"
+#include "../rmutil/rmalloc.h"
 
 AST_Variable* New_AST_Variable(const char *alias, const char *property) {
 	AST_Variable *v = (AST_Variable*)calloc(1, sizeof(AST_Variable));
@@ -39,7 +40,7 @@ AST_LinkEntity* New_AST_LinkEntity(char *alias, char *label, Vector *properties,
 }
 
 AST_LinkLength* New_AST_LinkLength(unsigned int minHops, unsigned int maxHops) {
-	AST_LinkLength *linkLength = malloc(sizeof(AST_LinkLength));
+	AST_LinkLength *linkLength = rm_malloc(sizeof(AST_LinkLength));
 	linkLength->minHops = minHops;
 	linkLength->maxHops = maxHops;
 	return linkLength;

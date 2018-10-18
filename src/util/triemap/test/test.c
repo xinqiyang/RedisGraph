@@ -1,4 +1,5 @@
 #include "../triemap.h"
+#include "../../../rmutil/rmalloc.h"
 #include "minunit.h"
 #include "time_sample.h"
 #include <stdint.h>
@@ -12,7 +13,7 @@ void testTrie() {
 
   for (int i = 0; i < 100; i++) {
     sprintf(buf, "key%d", i);
-    int *pi = malloc(sizeof(int));
+    int *pi = rm_malloc(sizeof(int));
     *pi = i;
     int rc = TrieMap_Add(tm, buf, strlen(buf), NULL, NULL);
     mu_check(rc);
@@ -22,7 +23,7 @@ void testTrie() {
   mu_assert_int_eq(100, tm->cardinality);
 
   // check insertion of empty node
-  int *empty = malloc(sizeof(int));
+  int *empty = rm_malloc(sizeof(int));
   *empty = 1337;
   mu_check(1 == TrieMap_Add(tm, "", 0, NULL, NULL));
   mu_assert_int_eq(101, tm->cardinality);
@@ -64,7 +65,7 @@ void testTrieIterator() {
 
   for (int i = 0; i < 100; i++) {
     sprintf(buf, "key%d", i);
-    int *pi = malloc(sizeof(int));
+    int *pi = rm_malloc(sizeof(int));
     *pi = i;
     TrieMap_Add(tm, buf, strlen(buf), pi, NULL);
   }
@@ -121,7 +122,7 @@ void testRandomWalk() {
 
   for (int i = 0; i < N; i++) {
     sprintf(buf, "key%d", i);
-    int *pi = malloc(sizeof(int));
+    int *pi = rm_malloc(sizeof(int));
     *pi = i;
     TrieMap_Add(tm, buf, strlen(buf), pi, NULL);
   }

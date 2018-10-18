@@ -7,9 +7,10 @@
 
 #include "./create.h"
 #include "../ast_common.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_CreateNode* New_AST_CreateNode(Vector *patterns) {
-	AST_CreateNode *createNode = (AST_CreateNode*)malloc(sizeof(AST_CreateNode));
+	AST_CreateNode *createNode = (AST_CreateNode*)rm_malloc(sizeof(AST_CreateNode));
 	createNode->graphEntities = NewVector(AST_GraphEntity*, 1);
 	
 	// Merge patterns into a single pattern.

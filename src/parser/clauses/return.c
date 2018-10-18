@@ -7,9 +7,10 @@
 
 #include "./return.h"
 #include "../../arithmetic/repository.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_ReturnElementNode* New_AST_ReturnElementNode(AST_ArithmeticExpressionNode *exp, const char* alias) {
-	AST_ReturnElementNode *returnElementNode = (AST_ReturnElementNode*)malloc(sizeof(AST_ReturnElementNode));
+	AST_ReturnElementNode *returnElementNode = (AST_ReturnElementNode*)rm_malloc(sizeof(AST_ReturnElementNode));
 	returnElementNode->exp = exp;
 	returnElementNode->alias = NULL;
 
@@ -19,7 +20,7 @@ AST_ReturnElementNode* New_AST_ReturnElementNode(AST_ArithmeticExpressionNode *e
 }
 
 AST_ReturnNode* New_AST_ReturnNode(Vector *returnElements, int distinct) {
-	AST_ReturnNode *returnNode = (AST_ReturnNode*)malloc(sizeof(AST_ReturnNode));
+	AST_ReturnNode *returnNode = (AST_ReturnNode*)rm_malloc(sizeof(AST_ReturnNode));
 	returnNode->returnElements = returnElements;
 	returnNode->distinct = distinct;
 	return returnNode;

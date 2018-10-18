@@ -6,13 +6,14 @@
 */
 
 #include "datablock_iterator.h"
+#include "../../rmutil/rmalloc.h"
 #include "assert.h"
 #include <stdio.h>
 
 DataBlockIterator *DataBlockIterator_New(Block *block, int start_pos, int end_pos, int step) {
     assert(block && start_pos >= 0 && end_pos >= start_pos && step >= 1);
     
-    DataBlockIterator *iter = malloc(sizeof(DataBlockIterator));
+    DataBlockIterator *iter = rm_malloc(sizeof(DataBlockIterator));
     iter->_start_block = block;
     iter->_current_block = block;
     iter->_block_pos = start_pos % BLOCK_CAP;

@@ -6,15 +6,16 @@
 */
 
 #include "./set.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_SetNode* New_AST_SetNode(Vector *elements) {
-	AST_SetNode *set_node = (AST_SetNode*)malloc(sizeof(AST_SetNode));
+	AST_SetNode *set_node = (AST_SetNode*)rm_malloc(sizeof(AST_SetNode));
 	set_node->set_elements = elements;
 	return set_node;
 }
 
 AST_SetElement* New_AST_SetElement(AST_Variable *updated_entity, AST_ArithmeticExpressionNode *exp) {
-	AST_SetElement *set_element = malloc(sizeof(AST_SetElement));
+	AST_SetElement *set_element = rm_malloc(sizeof(AST_SetElement));
 	set_element->entity = updated_entity;
 	set_element->exp = exp;
 	return set_element;

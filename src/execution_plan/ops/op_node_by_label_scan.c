@@ -6,9 +6,10 @@
 */
 
 #include "op_node_by_label_scan.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase *NewNodeByLabelScanOp(RedisModuleCtx *ctx, Graph *g, const char *graph_name, Node *node) {
-    NodeByLabelScan *nodeByLabelScan = malloc(sizeof(NodeByLabelScan));
+    NodeByLabelScan *nodeByLabelScan = rm_malloc(sizeof(NodeByLabelScan));
     nodeByLabelScan->g = g;
     nodeByLabelScan->node = node;
     nodeByLabelScan->_zero_matrix = NULL;

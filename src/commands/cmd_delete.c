@@ -8,10 +8,11 @@
 #include "cmd_delete.h"
 
 #include <assert.h>
-#include "stores/store.h"
+#include "../stores/store.h"
 #include "../graph/graph.h"
 #include "../query_executor.h"
 #include "../util/simple_timer.h"
+#include "../rmutil/rmalloc.h"
 
 /* DeleteGraphContext is used to hold all information required 
  * in order to delete a graph. */
@@ -21,7 +22,7 @@ typedef struct {
 } DeleteGraphContext;
 
 DeleteGraphContext *DeleteGraphContext_new(RedisModuleString *graphID, RedisModuleBlockedClient *bc) {
-    DeleteGraphContext *ctx = malloc(sizeof(DeleteGraphContext));
+    DeleteGraphContext *ctx = rm_malloc(sizeof(DeleteGraphContext));
     ctx->bc = bc;
     ctx->graphID = graphID;
     return ctx;

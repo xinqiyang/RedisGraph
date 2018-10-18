@@ -6,9 +6,10 @@
 */
 
 #include "op_cartesian_product.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewCartesianProductOp() {
-    CartesianProduct *cp = malloc(sizeof(CartesianProduct));
+    CartesianProduct *cp = rm_malloc(sizeof(CartesianProduct));
     cp->init = true;
     // Set our Op operations
     OpBase_Init(&cp->op);

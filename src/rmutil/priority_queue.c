@@ -1,8 +1,9 @@
 #include "priority_queue.h"
 #include "heap.h"
+#include "rmalloc.h"
 
 PriorityQueue *__newPriorityQueueSize(size_t elemSize, size_t cap, int (*cmp)(void *, void *)) {
-    PriorityQueue *pq = malloc(sizeof(PriorityQueue));
+    PriorityQueue *pq = rm_malloc(sizeof(PriorityQueue));
     pq->v = __newVectorSize(elemSize, cap);
     pq->cmp = cmp;
     return pq;

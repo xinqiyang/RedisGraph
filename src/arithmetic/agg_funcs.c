@@ -12,6 +12,7 @@
 #include "../value.h"
 #include <math.h>
 #include "../util/qsort.h"
+#include "../rmutil/rmalloc.h"
 
 #define ISLT(a,b) ((*a) < (*b))
 
@@ -50,7 +51,7 @@ int __agg_sumReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_SumFunc() {
-    __agg_sumCtx *ac = malloc(sizeof(__agg_sumCtx));
+    __agg_sumCtx *ac = rm_malloc(sizeof(__agg_sumCtx));
     ac->num = 0;
     ac->total = 0;
     
@@ -100,7 +101,7 @@ int __agg_avgReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_AvgFunc() {
-    __agg_avgCtx *ac = malloc(sizeof(__agg_avgCtx));
+    __agg_avgCtx *ac = rm_malloc(sizeof(__agg_avgCtx));
     ac->count = 0;
     ac->total = 0;
     
@@ -144,7 +145,7 @@ int __agg_maxReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_MaxFunc() {
-    __agg_maxCtx *ac = malloc(sizeof(__agg_maxCtx));
+    __agg_maxCtx *ac = rm_malloc(sizeof(__agg_maxCtx));
     ac->max = -DBL_MAX;
     
     return Agg_Reduce(ac, __agg_maxStep, __agg_maxReduceNext);
@@ -187,7 +188,7 @@ int __agg_minReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_MinFunc() {
-    __agg_minCtx *ac = malloc(sizeof(__agg_minCtx));
+    __agg_minCtx *ac = rm_malloc(sizeof(__agg_minCtx));
     ac->min = DBL_MAX;
     
     return Agg_Reduce(ac, __agg_minStep, __agg_minReduceNext);
@@ -213,7 +214,7 @@ int __agg_countReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_CountFunc() {
-    __agg_countCtx *ac = malloc(sizeof(__agg_countCtx));
+    __agg_countCtx *ac = rm_malloc(sizeof(__agg_countCtx));
     ac->count = 0;
     
     return Agg_Reduce(ac, __agg_countStep, __agg_countReduceNext);
@@ -319,9 +320,9 @@ int __agg_percContReduceNext(AggCtx *ctx) {
 
 // The percentile initializers are identical save for the ReduceNext function they specify
 AggCtx* Agg_PercDiscFunc() {
-    __agg_percCtx *ac = malloc(sizeof(__agg_percCtx));
+    __agg_percCtx *ac = rm_malloc(sizeof(__agg_percCtx));
     ac->count = 0;
-    ac->values = malloc(1024 * sizeof(double));
+    ac->values = rm_malloc(1024 * sizeof(double));
     ac->values_allocated = 1024;
     // Percentile will be updated by the first call to Step
     ac->percentile = -1;
@@ -329,9 +330,9 @@ AggCtx* Agg_PercDiscFunc() {
 }
 
 AggCtx* Agg_PercContFunc() {
-    __agg_percCtx *ac = malloc(sizeof(__agg_percCtx));
+    __agg_percCtx *ac = rm_malloc(sizeof(__agg_percCtx));
     ac->count = 0;
-    ac->values = malloc(1024 * sizeof(double));
+    ac->values = rm_malloc(1024 * sizeof(double));
     ac->values_allocated = 1024;
     // Percentile will be updated by the first call to Step
     ac->percentile = -1;
@@ -400,11 +401,11 @@ int __agg_StdevReduceNext(AggCtx *ctx) {
 }
 
 AggCtx* Agg_StdevFunc() {
-    __agg_stdevCtx *ac = malloc(sizeof(__agg_stdevCtx));
+    __agg_stdevCtx *ac = rm_malloc(sizeof(__agg_stdevCtx));
     ac->is_sampled = 1;
     ac->count = 0;
     ac->total = 0;
-    ac->values = malloc(1024 * sizeof(double));
+    ac->values = rm_malloc(1024 * sizeof(double));
     ac->values_allocated = 1024;
     return Agg_Reduce(ac, __agg_StdevStep, __agg_StdevReduceNext);
 }

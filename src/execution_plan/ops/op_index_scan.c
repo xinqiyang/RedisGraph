@@ -6,9 +6,10 @@
 */
 
 #include "op_index_scan.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase *NewIndexScanOp(Graph *g, Node *node, IndexIter *iter) {
-  IndexScan *indexScan = malloc(sizeof(IndexScan));
+  IndexScan *indexScan = rm_malloc(sizeof(IndexScan));
   indexScan->g = g;
   indexScan->node = node;
   indexScan->iter = iter;

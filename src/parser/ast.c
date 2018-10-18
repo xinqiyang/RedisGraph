@@ -13,6 +13,7 @@
 #include "./ast_arithmetic_expression.h"
 #include "../arithmetic/repository.h"
 #include "../arithmetic/arithmetic_expression.h"
+#include "../rmutil/rmalloc.h"
 
 /* Compares a triemap of user-specified functions with the registered functions we provide. */
 AST_Validation _AST_ValidateReferredFunctions(TrieMap *referred_functions,
@@ -68,7 +69,7 @@ AST_Query *New_AST_Query(AST_MatchNode *matchNode, AST_WhereNode *whereNode,
                          AST_ReturnNode *returnNode, AST_OrderNode *orderNode,
                          AST_SkipNode *skipNode, AST_LimitNode *limitNode,
                          AST_IndexNode *indexNode) {
-  AST_Query *queryExpressionNode = (AST_Query *)malloc(sizeof(AST_Query));
+  AST_Query *queryExpressionNode = (AST_Query *)rm_malloc(sizeof(AST_Query));
 
   queryExpressionNode->matchNode = matchNode;
   queryExpressionNode->whereNode = whereNode;

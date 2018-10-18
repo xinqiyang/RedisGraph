@@ -6,9 +6,10 @@
 */
 
 #include "delete.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_DeleteNode* New_AST_DeleteNode(Vector *elements) {
-	AST_DeleteNode *deleteNode = (AST_DeleteNode*)malloc(sizeof(AST_DeleteNode));
+	AST_DeleteNode *deleteNode = (AST_DeleteNode*)rm_malloc(sizeof(AST_DeleteNode));
 	deleteNode->graphEntities = elements;
 	return deleteNode;
 }

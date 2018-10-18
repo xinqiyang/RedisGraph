@@ -6,6 +6,7 @@
 */
 
 #include "graph_entity.h"
+#include "../rmutil/rmalloc.h"
 #include <stdio.h>
 
 SIValue *PROPERTY_NOTFOUND = &(SIValue){.intval = 0, .type = T_NULL};
@@ -13,7 +14,7 @@ SIValue *PROPERTY_NOTFOUND = &(SIValue){.intval = 0, .type = T_NULL};
 /* Expecting e to be either *Node or *Edge */
 void GraphEntity_Add_Properties(GraphEntity *e, int prop_count, char **keys, SIValue *values) {
 	if(e->properties == NULL) {
-		e->properties = malloc(sizeof(EntityProperty) * prop_count);
+		e->properties = rm_malloc(sizeof(EntityProperty) * prop_count);
 	} else {
 		e->properties = realloc(e->properties, sizeof(EntityProperty) * (e->prop_count + prop_count));
 	}

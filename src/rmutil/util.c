@@ -8,6 +8,7 @@
 #include <string.h>
 #include "../redismodule.h"
 #include "util.h"
+#include "rmalloc.h"
 
 /**
 Check if an argument exists in an argument list (argv,argc), starting at offset.
@@ -34,7 +35,7 @@ RMUtilInfo *RMUtil_GetRedisInfo(RedisModuleCtx *ctx) {
     
     
     int cap = 100; // rough estimate of info lines
-    RMUtilInfo *info = malloc(sizeof(RMUtilInfo));
+    RMUtilInfo *info = rm_malloc(sizeof(RMUtilInfo));
     info->entries = calloc(cap, sizeof(RMUtilInfoEntry));
     
     
@@ -73,9 +74,9 @@ RMUtilInfo *RMUtil_HGetAll(RedisModuleCtx *ctx, RedisModuleString *id) {
     }
     
     size_t reply_len = RedisModule_CallReplyLength(reply);
-    RMUtilInfo *hgetall = malloc(sizeof(RMUtilInfo));
+    RMUtilInfo *hgetall = rm_malloc(sizeof(RMUtilInfo));
     hgetall->numEntries = reply_len/2;
-    hgetall->entries = malloc(sizeof(RMUtilInfoEntry) * hgetall->numEntries);
+    hgetall->entries = rm_malloc(sizeof(RMUtilInfoEntry) * hgetall->numEntries);
     
     // Consume HGETALL
     for(int idx = 0; idx < reply_len; idx+=2) {

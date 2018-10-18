@@ -7,6 +7,7 @@
 
 #include "bulk_insert.h"
 #include "./stores/store.h"
+#include "../rmutil/rmalloc.h"
 #include <assert.h>
 
 typedef struct {
@@ -57,7 +58,7 @@ RedisModuleString** _Bulk_Insert_Parse_Label(RedisModuleCtx *ctx, RedisModuleStr
         }
         *argc -= attribute_count;
 
-        label->attributes = malloc(sizeof(char*) * attribute_count);
+        label->attributes = rm_malloc(sizeof(char*) * attribute_count);
         for(int j = 0; j < attribute_count; j++) {
             char *attribute = (char*)RedisModule_StringPtrLen(*argv++, NULL);
             label->attributes[j] = attribute;   // Attribute is being duplicated by Node_Add_Properties.
@@ -275,7 +276,7 @@ RedisModuleString** _Bulk_Insert_Insert_Edges(RedisModuleCtx *ctx, RedisModuleSt
 
     long long total_labeled_edges = 0;
     // As we can have over 500k relations, this is safer as a heap allocation.
-    EdgeDesc *connections = malloc(relations_count * sizeof(EdgeDesc));
+    EdgeDesc *connections = rm_malloc(relations_count * sizeof(EdgeDesc));
     LabelRelation labelRelations[label_count + 1];  // Extra one for unlabeled relations.
 
     if(label_count > 0) {

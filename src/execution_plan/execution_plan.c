@@ -15,6 +15,7 @@
 #include "../arithmetic/algebraic_expression.h"
 #include "./optimizations/optimizer.h"
 #include "./optimizations/optimizations.h"
+#include "../rmutil/rmalloc.h"
 
 /* Checks if parent has given child, if so returns 1
  * otherwise returns 0 */
@@ -30,7 +31,7 @@ int _OpBase_ContainsChild(const OpBase *parent, const OpBase *child) {
 void _OpBase_AddChild(OpBase *parent, OpBase *child) {
     // Add child to parent
     if(parent->children == NULL) {
-        parent->children = malloc(sizeof(OpBase *));
+        parent->children = rm_malloc(sizeof(OpBase *));
     } else {
         parent->children = realloc(parent->children, sizeof(OpBase *) * (parent->childCount+1));
     }

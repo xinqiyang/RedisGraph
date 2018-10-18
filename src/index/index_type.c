@@ -6,6 +6,7 @@
  */
 
 #include "index_type.h"
+#include "../rmutil/rmalloc.h"
 
 /* declaration of the type for redis registration. */
 RedisModuleType *IndexRedisModuleType;
@@ -68,7 +69,7 @@ void _IndexType_LoadSkiplist(RedisModuleIO *rdb, skiplist *sl, SIType valtype) {
   for (int i = 0; i < sl_len; i ++) {
     // Loop over key-val pairs
     // TODO ensure this gets freed
-    SIValue *key = malloc(sizeof(SIValue));
+    SIValue *key = rm_malloc(sizeof(SIValue));
     if (valtype == T_STRING) {
       *key = SI_StringVal(RedisModule_LoadStringBuffer(rdb, NULL));
     } else {
@@ -93,7 +94,7 @@ void *IndexType_RdbLoad(RedisModuleIO *rdb, int encver) {
   const char *label = RedisModule_LoadStringBuffer(rdb, NULL);
   const char *property = RedisModule_LoadStringBuffer(rdb, NULL);
 
-  Index *idx = malloc(sizeof(Index));
+  Index *idx = rm_malloc(sizeof(Index));
   idx->label = strdup(label);
   idx->property = strdup(property);
 

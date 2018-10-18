@@ -6,6 +6,7 @@
 */
 
 #include "tuples_iter.h"
+#include "../rmutil/rmalloc.h"
 #include <assert.h>
 
 TuplesIter *TuplesIter_new
@@ -13,7 +14,7 @@ TuplesIter *TuplesIter_new
     GrB_Matrix A
 )
 {
-    TuplesIter *iter = malloc (sizeof (TuplesIter)) ;
+    TuplesIter *iter = rm_malloc (sizeof (TuplesIter)) ;
     GrB_Matrix_nvals (&iter->nvals, A) ;
     iter->A = A ;
     iter->nnz_idx = 0 ;

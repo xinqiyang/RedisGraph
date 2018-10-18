@@ -8,11 +8,12 @@
 #include "resultset_record.h"
 #include "../rmutil/strings.h"
 #include "../query_executor.h"
+#include "../rmutil/rmalloc.h"
 
 ResultSetRecord* NewResultSetRecord(size_t len) {
-    ResultSetRecord *r = (ResultSetRecord*)malloc(sizeof(ResultSetRecord));
+    ResultSetRecord *r = (ResultSetRecord*)rm_malloc(sizeof(ResultSetRecord));
     r->len = len;
-    r->values = malloc(sizeof(SIValue) * len);
+    r->values = rm_malloc(sizeof(SIValue) * len);
     return r;
 }
 

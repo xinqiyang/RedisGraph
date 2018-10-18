@@ -80,7 +80,7 @@ typedef unsigned char uint8_t;
 #endif
 
 #ifndef uthash_malloc
-#define uthash_malloc(sz) malloc(sz)      /* malloc fcn                      */
+#define uthash_malloc(sz) rm_malloc(sz)      /* rm_malloc fcn                      */
 #endif
 #ifndef uthash_free
 #define uthash_free(ptr,sz) free(ptr)     /* free fcn                        */
@@ -107,7 +107,7 @@ typedef unsigned char uint8_t;
 #endif
 
 #if HASH_NONFATAL_OOM
-/* malloc failures can be recovered from */
+/* rm_malloc failures can be recovered from */
 
 #ifndef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(obj) do {} while (0)    /* non-fatal OOM error */
@@ -117,7 +117,7 @@ typedef unsigned char uint8_t;
 #define IF_HASH_NONFATAL_OOM(x) x
 
 #else
-/* malloc failures result in lost memory, hash tables are unusable */
+/* rm_malloc failures result in lost memory, hash tables are unusable */
 
 #ifndef uthash_fatal
 #define uthash_fatal(msg) exit(-1)        /* fatal OOM error */

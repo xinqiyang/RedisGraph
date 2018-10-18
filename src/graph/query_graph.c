@@ -8,6 +8,7 @@
 #include "query_graph.h"
 #include "../parser/ast.h"
 #include "../stores/store.h"
+#include "../rmutil/rmalloc.h"
 #include <assert.h>
 
 GraphEntity* _QueryGraph_GetEntityById(GraphEntity **entity_list, int entity_count, long int id) {
@@ -206,16 +207,16 @@ void _BuildQueryGraphAddEdge(RedisModuleCtx *ctx,
 }
 
 QueryGraph* QueryGraph_New(size_t node_cap, size_t edge_cap) {
-    QueryGraph* g = malloc(sizeof(QueryGraph));
+    QueryGraph* g = rm_malloc(sizeof(QueryGraph));
     g->node_count = 0;
     g->edge_count = 0;
     g->node_cap = node_cap;
     g->edge_cap = edge_cap;
 
-    g->nodes = malloc(sizeof(Node*) * node_cap);
-    g->edges = malloc(sizeof(Edge*) * edge_cap);
-    g->node_aliases = malloc(sizeof(char*) * node_cap);
-    g->edge_aliases = malloc(sizeof(char*) * edge_cap);
+    g->nodes = rm_malloc(sizeof(Node*) * node_cap);
+    g->edges = rm_malloc(sizeof(Edge*) * edge_cap);
+    g->node_aliases = rm_malloc(sizeof(char*) * node_cap);
+    g->edge_aliases = rm_malloc(sizeof(char*) * edge_cap);
 
     return g;
 }

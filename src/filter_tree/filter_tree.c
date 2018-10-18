@@ -11,6 +11,7 @@
 #include "../parser/grammar.h"
 #include "../query_executor.h"
 #include "../rmutil/vector.h"
+#include "../rmutil/rmalloc.h"
 
 FT_FilterNode* LeftChild(const FT_FilterNode *node) { return node->cond.left; }
 FT_FilterNode* RightChild(const FT_FilterNode *node) { return node->cond.right; }
@@ -20,14 +21,14 @@ int IsNodePredicate(const FT_FilterNode *node) {
 }
 
 FT_FilterNode* CreateCondFilterNode(int op) {
-    FT_FilterNode* filterNode = (FT_FilterNode*)malloc(sizeof(FT_FilterNode));
+    FT_FilterNode* filterNode = (FT_FilterNode*)rm_malloc(sizeof(FT_FilterNode));
     filterNode->t = FT_N_COND;
     filterNode->cond.op = op;
     return filterNode;
 }
 
 FT_FilterNode* _CreatePredicateFilterNode(const AST_PredicateNode *pn, const QueryGraph *qg) {
-    FT_FilterNode *filterNode = malloc(sizeof(FT_FilterNode));
+    FT_FilterNode *filterNode = rm_malloc(sizeof(FT_FilterNode));
     filterNode->t= FT_N_PRED;
     filterNode->pred.op = pn->op;
     filterNode->pred.lhs = AR_EXP_BuildFromAST(pn->lhs);

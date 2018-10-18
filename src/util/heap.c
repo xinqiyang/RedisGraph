@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "heap.h"
+#include "../rmutil/rmalloc.h"
 
 
 #define DEFAULT_CAPACITY 13
@@ -60,7 +61,7 @@ heap_t *heap_new(int (*cmp) (const void *,
                              const void *udata),
                  const void *udata)
 {
-    heap_t *h = malloc(heap_sizeof(DEFAULT_CAPACITY));
+    heap_t *h = rm_malloc(heap_sizeof(DEFAULT_CAPACITY));
 
     if (!h)
         return NULL;

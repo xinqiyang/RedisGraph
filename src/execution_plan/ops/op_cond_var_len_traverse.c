@@ -10,10 +10,11 @@
 #include "../../util/arr.h"
 #include "../../algorithms/all_paths.h"
 #include "./op_cond_var_len_traverse.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewCondVarLenTraverseOp(AlgebraicExpression *ae, unsigned int minHops, unsigned int maxHops, Graph *g) {
     assert(ae && minHops <= maxHops && g && ae->operand_count == 1);
-    CondVarLenTraverse *condVarLenTraverse = malloc(sizeof(CondVarLenTraverse));
+    CondVarLenTraverse *condVarLenTraverse = rm_malloc(sizeof(CondVarLenTraverse));
     condVarLenTraverse->g = g;
     condVarLenTraverse->relationID = Edge_GetRelationID(ae->edge);
     condVarLenTraverse->srcNodeAlias = ae->src_node->alias;
@@ -22,7 +23,7 @@ OpBase* NewCondVarLenTraverseOp(AlgebraicExpression *ae, unsigned int minHops, u
     condVarLenTraverse->maxHops = maxHops;
     condVarLenTraverse->pathsCount = 0;
     condVarLenTraverse->pathsCap = 32;
-    condVarLenTraverse->paths = malloc(sizeof(Path) * condVarLenTraverse->pathsCap);
+    condVarLenTraverse->paths = rm_malloc(sizeof(Path) * condVarLenTraverse->pathsCap);
 
     // Set our Op operations
     OpBase_Init(&condVarLenTraverse->op);

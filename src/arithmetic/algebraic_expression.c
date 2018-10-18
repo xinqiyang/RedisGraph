@@ -6,10 +6,11 @@
 */
 
 #include "algebraic_expression.h"
+#include "../rmutil/rmalloc.h"
 #include <assert.h>
 
 AlgebraicExpressionResult *_AlgebraicExpressionResult_New(GrB_Matrix M, AlgebraicExpression *ae) {
-    AlgebraicExpressionResult *aer = malloc(sizeof(AlgebraicExpressionResult));
+    AlgebraicExpressionResult *aer = rm_malloc(sizeof(AlgebraicExpressionResult));
 
     // Are we required to transpose result?
     /* TODO: It might be cheaper to transpose using a 
@@ -24,11 +25,11 @@ AlgebraicExpressionResult *_AlgebraicExpressionResult_New(GrB_Matrix M, Algebrai
 }
 
 AlgebraicExpression *_AE_MUL(size_t operand_cap) {
-    AlgebraicExpression *ae = malloc(sizeof(AlgebraicExpression));
+    AlgebraicExpression *ae = rm_malloc(sizeof(AlgebraicExpression));
     ae->op = AL_EXP_MUL;
     ae->operand_cap = operand_cap;
     ae->operand_count = 0;
-    ae->operands = malloc(sizeof(AlgebraicExpressionOperand) * ae->operand_cap);
+    ae->operands = rm_malloc(sizeof(AlgebraicExpressionOperand) * ae->operand_cap);
     ae->edge = NULL;
     ae->edgeLength = NULL;
     return ae;
@@ -110,7 +111,7 @@ AlgebraicExpression** _AlgebraicExpression_IsolateVariableLenExps(AlgebraicExpre
     /* Return value is a new set of expressions, where each variable length expression
       * is guaranteed to have a single operand, as such in the worst case the number of
       * expressions doubles. */
-    AlgebraicExpression **res = malloc(sizeof(AlgebraicExpression*) * (*expCount) * 2);
+    AlgebraicExpression **res = rm_malloc(sizeof(AlgebraicExpression*) * (*expCount) * 2);
     size_t newExpCount = 0;
 
     /* Scan through each expression, locate expression which 
@@ -159,7 +160,7 @@ AlgebraicExpression** _AlgebraicExpression_IsolateVariableLenExps(AlgebraicExpre
  * considering referenced intermidate nodes and edges. */
 AlgebraicExpression **_AlgebraicExpression_Intermidate_Expressions(AlgebraicExpression *exp, const AST_Query *ast, Vector *matchPattern, const QueryGraph *q, size_t *exp_count) {
     /* Allocating maximum number of expression possible. */
-    AlgebraicExpression **expressions = malloc(sizeof(AlgebraicExpression *) * exp->operand_count);
+    AlgebraicExpression **expressions = rm_malloc(sizeof(AlgebraicExpression *) * exp->operand_count);
     int expIdx = 0;     // Sub expression index.
     int operandIdx = 0; // Index to currently inspected operand.
     int transpose;     // Indicate if matrix operand needs to be transposed.    

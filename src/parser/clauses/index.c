@@ -1,8 +1,9 @@
 #include "./index.h"
 #include "../ast_common.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_IndexNode* New_AST_IndexNode(const char *label, const char *property, AST_IndexOpType optype) {
-  AST_IndexNode *indexOp = malloc(sizeof(AST_IndexNode));
+  AST_IndexNode *indexOp = rm_malloc(sizeof(AST_IndexNode));
   indexOp->label = label;
   indexOp->property = property;
   indexOp->operation = optype;

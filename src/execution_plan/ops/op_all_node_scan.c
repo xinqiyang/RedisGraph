@@ -6,9 +6,10 @@
 */
 
 #include "op_all_node_scan.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewAllNodeScanOp(const Graph *g, Node *n) {
-    AllNodeScan *allNodeScan = malloc(sizeof(AllNodeScan));
+    AllNodeScan *allNodeScan = rm_malloc(sizeof(AllNodeScan));
     allNodeScan->node = n;
     allNodeScan->iter = Graph_ScanNodes(g);
 

@@ -6,25 +6,26 @@
 */
 
 #include "./order.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_OrderNode* New_AST_OrderNode(Vector *columns, AST_OrderByDirection direction) {
-	AST_OrderNode *orderNode = (AST_OrderNode*)malloc(sizeof(AST_OrderNode));
+	AST_OrderNode *orderNode = (AST_OrderNode*)rm_malloc(sizeof(AST_OrderNode));
 	orderNode->columns = columns;
 	orderNode->direction = direction;
 	return orderNode;
 }
 
 AST_ColumnNode* New_AST_ColumnNode(const char *alias, const char *property, AST_ColumnNodeType type) {
-	AST_ColumnNode *node = malloc(sizeof(AST_ColumnNode));
+	AST_ColumnNode *node = rm_malloc(sizeof(AST_ColumnNode));
 	node->type = type;
 	node->alias = NULL;
 	node->property = NULL;
 
-	node->alias = malloc(sizeof(char) * (strlen(alias) + 1));
+	node->alias = rm_malloc(sizeof(char) * (strlen(alias) + 1));
 	strcpy(node->alias, alias);
 
 	if(type == N_VARIABLE) {
-		node->property = malloc(sizeof(char) * (strlen(property) + 1));
+		node->property = rm_malloc(sizeof(char) * (strlen(property) + 1));
 		strcpy(node->property, property);
 	}
 

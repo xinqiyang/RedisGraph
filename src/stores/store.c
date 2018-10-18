@@ -10,6 +10,7 @@
 #include "../rmutil/util.h"
 #include "../rmutil/strings.h"
 #include <assert.h>
+#include "../rmutil/rmalloc.h"
 
 /* Generates an ID for a new LabelStore. */
 int LabelStore_Id(char **id, LabelStoreType type, const char *graph, const char *label) {
@@ -107,7 +108,7 @@ RedisModuleString **LabelStore_GetKeys(RedisModuleCtx *ctx, const char *graphID,
     }
     
     size_t matchedKeyCount = RedisModule_CallReplyLength(keysCallReply);
-    RedisModuleString **storeKeys = malloc(sizeof(RedisModuleString*) * matchedKeyCount);
+    RedisModuleString **storeKeys = rm_malloc(sizeof(RedisModuleString*) * matchedKeyCount);
 
     int storeKeyIdx = 0;
     for(int idx = 0; idx < matchedKeyCount; idx++) {

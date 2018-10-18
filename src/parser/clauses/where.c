@@ -7,15 +7,16 @@
 
 #include "./where.h"
 #include <assert.h>
+#include "../../rmutil/rmalloc.h"
 
 AST_WhereNode* New_AST_WhereNode(AST_FilterNode *filters) {
-	AST_WhereNode *whereNode = (AST_WhereNode*)malloc(sizeof(AST_WhereNode));
+	AST_WhereNode *whereNode = (AST_WhereNode*)rm_malloc(sizeof(AST_WhereNode));
 	whereNode->filters = filters;
 	return whereNode;
 }
 
 AST_FilterNode* New_AST_PredicateNode(AST_ArithmeticExpressionNode *lhs, int op, AST_ArithmeticExpressionNode *rhs) {
-	AST_FilterNode *n = malloc(sizeof(AST_FilterNode));
+	AST_FilterNode *n = rm_malloc(sizeof(AST_FilterNode));
 	n->t = N_PRED;
 	n->pn.lhs = lhs;
 	n->pn.op = op;
@@ -25,7 +26,7 @@ AST_FilterNode* New_AST_PredicateNode(AST_ArithmeticExpressionNode *lhs, int op,
 }
 
 AST_FilterNode *New_AST_ConditionNode(AST_FilterNode *left, int op, AST_FilterNode *right) {
-	AST_FilterNode *n = malloc(sizeof(AST_FilterNode));
+	AST_FilterNode *n = rm_malloc(sizeof(AST_FilterNode));
 	n->t = N_COND;
 	n->cn.left = left;
 	n->cn.right = right;

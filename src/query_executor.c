@@ -17,6 +17,7 @@
 #include "arithmetic/agg_ctx.h"
 #include "arithmetic/repository.h"
 #include "parser/parser_common.h"
+#include "rmutil/rmalloc.h"
 
 static void _returnClause_ExpandCollapsedNodes(RedisModuleCtx *ctx, AST_Query *ast, const char *graphName) {
      /* Create a new return clause */
@@ -202,7 +203,7 @@ Graph *MGraph_CreateGraph(RedisModuleCtx *ctx, RedisModuleString *graph_name) {
 /* Construct an expression tree foreach none aggregated term.
  * Returns a vector of none aggregated expression trees. */
 void Build_None_Aggregated_Arithmetic_Expressions(AST_ReturnNode *return_node, AR_ExpNode ***expressions, int *expressions_count) {
-    *expressions = malloc(sizeof(AR_ExpNode *) * Vector_Size(return_node->returnElements));
+    *expressions = rm_malloc(sizeof(AR_ExpNode *) * Vector_Size(return_node->returnElements));
     *expressions_count = 0;
 
     for(int i = 0; i < Vector_Size(return_node->returnElements); i++) {

@@ -7,9 +7,10 @@
 
 #include "./match.h"
 #include "../ast_common.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_MatchNode* New_AST_MatchNode(Vector *patterns) {
-	AST_MatchNode *matchNode = (AST_MatchNode*)malloc(sizeof(AST_MatchNode));
+	AST_MatchNode *matchNode = (AST_MatchNode*)rm_malloc(sizeof(AST_MatchNode));
 	matchNode->patterns = patterns;
 	matchNode->_mergedPatterns = NewVector(AST_GraphEntity*, 1);
 

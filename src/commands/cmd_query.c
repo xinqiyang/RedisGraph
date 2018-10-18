@@ -12,9 +12,10 @@
 #include "../index/index_type.h"
 #include "../util/simple_timer.h"
 #include "../execution_plan/execution_plan.h"
+#include "../rmutil/rmalloc.h"
 
 QueryContext* _queryContext_New(RedisModuleCtx *ctx, RedisModuleBlockedClient *bc, AST_Query* ast, RedisModuleString *graphName) {
-    QueryContext* context = malloc(sizeof(QueryContext));
+    QueryContext* context = rm_malloc(sizeof(QueryContext));
     context->bc = bc;
     context->ast = ast;
     context->graphName = graphName;

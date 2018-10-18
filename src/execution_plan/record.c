@@ -7,6 +7,7 @@
 
 #include "./record.h"
 #include "../util/uthash.h"
+#include "../rmutil/rmalloc.h"
 #include <assert.h>
 
 Record Record_Empty() {
@@ -20,7 +21,7 @@ void Record_AddEntry(Record *r, const char* k, SIValue v) {
          // key already exists, update entry.
          e->v = v;
     } else {
-        e = malloc(sizeof(Entry));
+        e = rm_malloc(sizeof(Entry));
         e->alias = k;
         e->v = v;
         HASH_ADD_KEYPTR(hh, *r, e->alias, strlen(e->alias), e);

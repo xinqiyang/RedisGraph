@@ -6,9 +6,10 @@
 */
 
 #include "op_filter.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewFilterOp(FT_FilterNode *filterTree) {
-    Filter *filter = malloc(sizeof(Filter));
+    Filter *filter = rm_malloc(sizeof(Filter));
     filter->filterTree = filterTree;
 
     // Set our Op operations

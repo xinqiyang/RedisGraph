@@ -11,6 +11,7 @@
 #include "../arithmetic/aggregate.h"
 #include "../query_executor.h"
 #include "../util/qsort.h"
+#include "../rmutil/rmalloc.h"
 
 int _heap_elem_compare(const void *A, const void *B, const void *udata) {
     ResultSet* set = (ResultSet*)udata;
@@ -182,7 +183,7 @@ void _sortResultSet(const ResultSet *set, const Vector* records) {
 }
 
 Column* NewColumn(const char *name, const char *alias, int aggregated) {
-    Column* column = malloc(sizeof(Column));
+    Column* column = rm_malloc(sizeof(Column));
     column->name = NULL;
     column->alias = NULL;
     column->aggregated = aggregated;
@@ -201,7 +202,7 @@ Column* NewColumn(const char *name, const char *alias, int aggregated) {
 ResultSetHeader* NewResultSetHeader(const AST_Query *ast) {
     if(!ast->returnNode) return NULL;
 
-    ResultSetHeader* header = malloc(sizeof(ResultSetHeader));
+    ResultSetHeader* header = rm_malloc(sizeof(ResultSetHeader));
     header->columns_len = 0;
     header->orderby_len = 0;
     header->columns = NULL;
@@ -209,12 +210,12 @@ ResultSetHeader* NewResultSetHeader(const AST_Query *ast) {
 
     if(ast->returnNode != NULL) {
         header->columns_len = Vector_Size(ast->returnNode->returnElements);
-        header->columns = malloc(sizeof(Column*) * header->columns_len);
+        header->columns = rm_malloc(sizeof(Column*) * header->columns_len);
     }
 
     if(ast->orderNode != NULL) {
         header->orderby_len = Vector_Size(ast->orderNode->columns);
-        header->orderBys = malloc(sizeof(int) * header->orderby_len);
+        header->orderBys = rm_malloc(sizeof(int) * header->orderby_len);
     }
 
     for(int i = 0; i < header->columns_len; i++) {
@@ -269,7 +270,7 @@ ResultSetHeader* NewResultSetHeader(const AST_Query *ast) {
 }
 
 ResultSet* NewResultSet(AST_Query* ast, RedisModuleCtx *ctx) {
-    ResultSet* set = (ResultSet*)malloc(sizeof(ResultSet));
+    ResultSet* set = (ResultSet*)rm_malloc(sizeof(ResultSet));
     set->ctx = ctx;
     set->heap = NULL;
     set->trie = NULL;
@@ -283,7 +284,7 @@ ResultSet* NewResultSet(AST_Query* ast, RedisModuleCtx *ctx) {
     set->recordCount = 0;    
     set->header = NewResultSetHeader(ast);
     set->bufferLen = 2048;
-    set->buffer = malloc(set->bufferLen);
+    set->buffer = rm_malloc(set->bufferLen);
     set->streaming = (set->header && !(set->ordered || set->aggregated));
     set->stats.labels_added = 0;
     set->stats.nodes_created = 0;
@@ -400,7 +401,7 @@ void ResultSet_Replay(ResultSet* set) {
     if(set->recordCount) {
         size_t str_record_len = 0;
         size_t str_record_cap = 2048;
-        char *str_record = malloc(str_record_cap);
+        char *str_record = rm_malloc(str_record_cap);
 
         if(set->ordered) {
             if(set->limit != RESULTSET_UNLIMITED) {
@@ -408,7 +409,7 @@ void ResultSet_Replay(ResultSet* set) {
                 ResultSetRecord* record;
                 int record_idx = 0;
                 int records_count = heap_count(set->heap);
-                ResultSetRecord **records = malloc(sizeof(ResultSetRecord*) * records_count);
+                ResultSetRecord **records = rm_malloc(sizeof(ResultSetRecord*) * records_count);
 
                 /* Pop items from heap */
                 while(records_count > 0) {

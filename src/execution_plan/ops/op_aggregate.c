@@ -11,9 +11,10 @@
 #include "../../grouping/group.h"
 #include "../../grouping/group_cache.h"
 #include "../../query_executor.h"
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewAggregateOp(AST_Query *ast, TrieMap *groups) {
-    Aggregate *aggregate = malloc(sizeof(Aggregate));
+    Aggregate *aggregate = rm_malloc(sizeof(Aggregate));
     aggregate->ast = ast;
     aggregate->init = 0;
     aggregate->none_aggregated_expression_count = 0;
@@ -62,7 +63,7 @@ char* _computeGroupKey(Aggregate *op, SIValue *group_keys, Record r) {
 
     // Determine required size for group string representation.
     size_t str_group_len = SIValue_StringConcatLen(group_keys,op->none_aggregated_expression_count);
-    str_group = malloc(sizeof(char) * str_group_len);
+    str_group = rm_malloc(sizeof(char) * str_group_len);
 
     SIValue_StringConcat(group_keys, op->none_aggregated_expression_count, str_group, str_group_len);
     return str_group;
@@ -81,7 +82,7 @@ void _aggregateRecord(Aggregate *op, Record r) {
 
         /* Clone group keys. */
         size_t key_count = op->none_aggregated_expression_count;
-        SIValue *group_keys = malloc(sizeof(SIValue) * op->none_aggregated_expression_count);
+        SIValue *group_keys = rm_malloc(sizeof(SIValue) * op->none_aggregated_expression_count);
         for(int i = 0; i < op->none_aggregated_expression_count; i++) {
             group_keys[i] = op->group_keys[i];
         }
@@ -108,7 +109,7 @@ OpResult AggregateConsume(OpBase *opBase, Record *r) {
                                                      &op->none_aggregated_expression_count);
         /* Allocate memory for group keys. */
         if(op->none_aggregated_expression_count > 0) {
-            op->group_keys = malloc(sizeof(SIValue) * op->none_aggregated_expression_count);
+            op->group_keys = rm_malloc(sizeof(SIValue) * op->none_aggregated_expression_count);
         }
         op->init = 1;
     }

@@ -41,13 +41,14 @@
  * in different ways. */
 
 #include "skiplist.h"
+#include "../rmutil/rmalloc.h"
 
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#define zmalloc malloc
+#define zmalloc rm_malloc
 #define zfree free
 
 static inline unsigned long skiplistLength(skiplist *sl) { return sl->length; }

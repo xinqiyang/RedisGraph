@@ -7,6 +7,7 @@
 
 #include "index.h"
 #include "index_type.h"
+#include "../rmutil/rmalloc.h"
 
 RedisModuleKey* _index_LookupKey(RedisModuleCtx *ctx, const char *graph, const char *label, const char *property, bool write_access) {
   char *strKey;
@@ -40,7 +41,7 @@ int compareNumerics(SIValue *a, SIValue *b) {
 /* The index must maintain its own copy of the indexed SIValue
  * so that it becomes outdated but not broken by updates to the property. */
 SIValue* cloneKey(SIValue *property) {
-  SIValue *clone = malloc(sizeof(SIValue));
+  SIValue *clone = rm_malloc(sizeof(SIValue));
   *clone = SI_Clone(*property);
   return clone;
 }
@@ -89,7 +90,7 @@ void initializeSkiplists(Index *index) {
 /* buildIndex allocates an Index object and populates it with a label-property pair
  * by traversing a label matrix with a TuplesIter. */
 Index* buildIndex(Graph *g, const GrB_Matrix label_matrix, const char *label, const char *prop_str) {
-  Index *index = malloc(sizeof(Index));
+  Index *index = rm_malloc(sizeof(Index));
 
   index->label = strdup(label);
   index->property = strdup(prop_str);

@@ -6,9 +6,10 @@
 */
 
 #include "./limit.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_LimitNode* New_AST_LimitNode(int limit) {
-	AST_LimitNode* limitNode = (AST_LimitNode*)malloc(sizeof(AST_LimitNode));
+	AST_LimitNode* limitNode = (AST_LimitNode*)rm_malloc(sizeof(AST_LimitNode));
 	limitNode->limit = limit;
 	return limitNode;
 }

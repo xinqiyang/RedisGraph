@@ -7,14 +7,15 @@
 
 #include "../../stores/store.h"
 #include "op_create.h"
+#include "../../rmutil/rmalloc.h"
 #include <assert.h>
 
 void _SetModifiedEntities(OpCreate *op) {
     /* Determin which entities are modified by create op.
      * Search uninitialized nodes. */
     size_t create_entity_count = Vector_Size(op->ast->createNode->graphEntities);
-    op->nodes_to_create = malloc(sizeof(NodeCreateCtx) * create_entity_count);
-    op->edges_to_create = malloc(sizeof(EdgeCreateCtx) * create_entity_count);
+    op->nodes_to_create = rm_malloc(sizeof(NodeCreateCtx) * create_entity_count);
+    op->edges_to_create = rm_malloc(sizeof(EdgeCreateCtx) * create_entity_count);
 
     int node_idx = 0;
     int edge_idx = 0;

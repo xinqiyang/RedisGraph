@@ -7,6 +7,7 @@
 
 #include "op_update.h"
 #include "../../arithmetic/arithmetic_expression.h"
+#include "../../rmutil/rmalloc.h"
 
 /* Forward declarations. */
 void _OpUpdate_BuildUpdateEvalCtx(OpUpdate* op, AST_SetNode *setNode);
@@ -21,7 +22,7 @@ OpBase* NewUpdateOp(RedisModuleCtx *ctx, AST_Query *ast, ResultSet *result_set, 
     op_update->update_expressions_count = 0;
     op_update->entities_to_update_count = 0;
     op_update->entities_to_update_cap = 16; /* 16 seems reasonable number to start with. */
-    op_update->entities_to_update = malloc(sizeof(EntityUpdateEvalCtx) * op_update->entities_to_update_cap);
+    op_update->entities_to_update = rm_malloc(sizeof(EntityUpdateEvalCtx) * op_update->entities_to_update_cap);
 
     _OpUpdate_BuildUpdateEvalCtx(op_update, ast->setNode);
 
@@ -41,7 +42,7 @@ OpBase* NewUpdateOp(RedisModuleCtx *ctx, AST_Query *ast, ResultSet *result_set, 
  * the update op. */
 void _OpUpdate_BuildUpdateEvalCtx(OpUpdate* op, AST_SetNode *setNode) {
     op->update_expressions_count = Vector_Size(setNode->set_elements);
-    op->update_expressions = malloc(sizeof(EntityUpdateEvalCtx) * op->update_expressions_count);
+    op->update_expressions = rm_malloc(sizeof(EntityUpdateEvalCtx) * op->update_expressions_count);
 
     for(int i = 0; i < op->update_expressions_count; i++) {
         AST_SetElement *element;

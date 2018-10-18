@@ -6,9 +6,10 @@
 */
 
 #include "ast_arithmetic_expression.h"
+#include "../rmutil/rmalloc.h"
 
 AST_ArithmeticExpressionNode* New_AST_AR_EXP_VariableOperandNode(char* alias, char *property) {
-	AST_ArithmeticExpressionNode *node = malloc(sizeof(AST_ArithmeticExpressionNode));
+	AST_ArithmeticExpressionNode *node = rm_malloc(sizeof(AST_ArithmeticExpressionNode));
 	node->type = AST_AR_EXP_OPERAND;
 	node->operand.type = AST_AR_EXP_VARIADIC;
 	node->operand.variadic.alias = strdup(alias);
@@ -22,7 +23,7 @@ AST_ArithmeticExpressionNode* New_AST_AR_EXP_VariableOperandNode(char* alias, ch
 }
 
 AST_ArithmeticExpressionNode* New_AST_AR_EXP_ConstOperandNode(SIValue constant) {
-	AST_ArithmeticExpressionNode *node = malloc(sizeof(AST_ArithmeticExpressionNode));
+	AST_ArithmeticExpressionNode *node = rm_malloc(sizeof(AST_ArithmeticExpressionNode));
 	node->type = AST_AR_EXP_OPERAND;
 	node->operand.type = AST_AR_EXP_CONSTANT;
 	node->operand.constant = constant;
@@ -30,7 +31,7 @@ AST_ArithmeticExpressionNode* New_AST_AR_EXP_ConstOperandNode(SIValue constant) 
 }
 
 AST_ArithmeticExpressionNode* New_AST_AR_EXP_OpNode(char *func, Vector *args) {
-	AST_ArithmeticExpressionNode *node = malloc(sizeof(AST_ArithmeticExpressionNode));
+	AST_ArithmeticExpressionNode *node = rm_malloc(sizeof(AST_ArithmeticExpressionNode));
 	node->type = AST_AR_EXP_OP;
 	node->op.function = strdup(func);
 	node->op.args = args;

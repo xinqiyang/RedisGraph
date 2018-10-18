@@ -7,9 +7,10 @@
 
 #include "merge.h"
 #include "../ast_common.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_MergeNode* New_AST_MergeNode(Vector *graphEntities) {
-	AST_MergeNode *mergeNode = malloc(sizeof(AST_MergeNode));
+	AST_MergeNode *mergeNode = rm_malloc(sizeof(AST_MergeNode));
 	mergeNode->graphEntities = graphEntities;
 	return mergeNode;
 }

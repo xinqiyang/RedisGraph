@@ -11,6 +11,7 @@
 #include "graph_type.h"
 #include "../util/qsort.h"
 #include "../GraphBLASExt/tuples_iter.h"
+#include "../rmutil/rmalloc.h"
 
 
 /*========================= Graph utility functions ========================= */
@@ -255,7 +256,7 @@ void _Graph_DeleteEdge(Graph *g, Edge *e) {
 /*================================ Graph API ================================ */
 Graph *Graph_New(size_t n) {
     assert(n > 0);
-    Graph *g = malloc(sizeof(Graph));
+    Graph *g = rm_malloc(sizeof(Graph));
 
     // TODO Our node iterators always cast the elements of this
     // to Nodes, but only the GraphEntity portion can be safely accessed
@@ -266,8 +267,8 @@ Graph *Graph_New(size_t n) {
     g->relation_count = 0;
     g->label_cap = GRAPH_DEFAULT_LABEL_CAP;
     g->label_count = 0;
-    g->_relations = malloc(sizeof(GrB_Matrix) * g->relation_cap);
-    g->_labels = malloc(sizeof(GrB_Matrix) * g->label_cap);
+    g->_relations = rm_malloc(sizeof(GrB_Matrix) * g->relation_cap);
+    g->_labels = rm_malloc(sizeof(GrB_Matrix) * g->label_cap);
     GrB_Matrix_new(&g->adjacency_matrix, GrB_BOOL, _Graph_NodeCap(g), _Graph_NodeCap(g));
 
     /* TODO: We might want a mutex per matrix,
@@ -529,8 +530,8 @@ void Graph_DeleteNodes(Graph *g, NodeID *IDs, size_t IDCount) {
     // Compose a sorted array of edge ids.
     Edge *e;
     size_t edgeCount = Vector_Size(edges);
-    EdgeID *edgeIDs = malloc(sizeof(EdgeID) * edgeCount);
-    EdgeID *dupFreeIDs = malloc(sizeof(EdgeID) * edgeCount);
+    EdgeID *edgeIDs = rm_malloc(sizeof(EdgeID) * edgeCount);
+    EdgeID *dupFreeIDs = rm_malloc(sizeof(EdgeID) * edgeCount);
     for(size_t i = 0; i < edgeCount; i++) {
         Vector_Get(edges, i, &e);
         edgeIDs[i] = e->id;

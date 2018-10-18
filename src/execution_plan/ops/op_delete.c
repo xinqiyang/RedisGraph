@@ -8,6 +8,7 @@
 #include "./op_delete.h"
 #include "../../util/arr.h"
 #include "../../util/qsort.h"
+#include "../../rmutil/rmalloc.h"
 #include <assert.h>
 
 #define nodeIDislt(a,b) (a<b)
@@ -20,14 +21,14 @@
 void _LocateEntities(OpDelete *op_delete, QueryGraph *graph, AST_DeleteNode *ast_delete_node);
 
 OpBase* NewDeleteOp(AST_DeleteNode *ast_delete_node, QueryGraph *qg, Graph *g, ResultSet *result_set) {
-    OpDelete *op_delete = malloc(sizeof(OpDelete));
+    OpDelete *op_delete = rm_malloc(sizeof(OpDelete));
 
     op_delete->g = g;
     op_delete->qg = qg;
     op_delete->node_count = 0;
     op_delete->edge_count = 0;
-    op_delete->nodes_to_delete = malloc(sizeof(char*) * Vector_Size(ast_delete_node->graphEntities));
-    op_delete->edges_to_delete = malloc(sizeof(char*) * Vector_Size(ast_delete_node->graphEntities));
+    op_delete->nodes_to_delete = rm_malloc(sizeof(char*) * Vector_Size(ast_delete_node->graphEntities));
+    op_delete->edges_to_delete = rm_malloc(sizeof(char*) * Vector_Size(ast_delete_node->graphEntities));
     op_delete->deleted_nodes = array_new(NodeID, 32);
     op_delete->deleted_edges = array_new(EdgeID, 32);
     op_delete->result_set = result_set;
@@ -70,7 +71,7 @@ EntityID *_SortNRemoveDups(EntityID *entities, size_t entityCount, size_t *dupFr
     int j = 0;  // Index into dup_free_ids.
 
     // Array of unique IDs.
-    EntityID *dup_free_ids = malloc(sizeof(EntityID) * entityCount);
+    EntityID *dup_free_ids = rm_malloc(sizeof(EntityID) * entityCount);
 
     for(int i = 0; i < entityCount; i++) {
         EntityID current = entities[i];

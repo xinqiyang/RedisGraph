@@ -10,9 +10,10 @@
 #include "../query_executor.h"
 #include "../util/simple_timer.h"
 #include "../bulk_insert/bulk_insert.h"
+#include "../rmutil/rmalloc.h"
 
 BulkInsertContext* BulkInsertContext_New(RedisModuleCtx *ctx, RedisModuleBlockedClient *bc, RedisModuleString **argv, int argc) {
-    BulkInsertContext *context = malloc(sizeof(BulkInsertContext));
+    BulkInsertContext *context = rm_malloc(sizeof(BulkInsertContext));
 
     context->bc = bc;
     context->argc = argc;

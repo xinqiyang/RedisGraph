@@ -6,9 +6,10 @@
 */
 
 #include "./skip.h"
+#include "../../rmutil/rmalloc.h"
 
 AST_SkipNode* New_AST_SkipNode(size_t n) {
-    AST_SkipNode* skipNode = malloc(sizeof(AST_SkipNode));
+    AST_SkipNode* skipNode = rm_malloc(sizeof(AST_SkipNode));
     skipNode->skip = n;
     return skipNode;
 }

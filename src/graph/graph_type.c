@@ -8,6 +8,7 @@
 #include "graph.h"
 #include "graph_type.h"
 #include "../GraphBLASExt/tuples_iter.h"
+#include "../rmutil/rmalloc.h"
 
 /* Declaration of the type for redis registration. */
 RedisModuleType *GraphRedisModuleType;
@@ -116,7 +117,7 @@ void _GraphType_LoadEdges(RedisModuleIO *rdb, Graph *g) {
 
     /* TODO: it might be better to process edges in batches,
      * such that we do not allocate huge chunks of memory. */
-    EdgeDesc *connections = malloc(edgeCount * sizeof(EdgeDesc));
+    EdgeDesc *connections = rm_malloc(edgeCount * sizeof(EdgeDesc));
 
     // Construct connections.
     for(int i = 0; i < edgeCount; i++) {

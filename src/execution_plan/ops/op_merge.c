@@ -10,9 +10,10 @@
 #include "../../stores/store.h"
 #include "op_merge.h"
 #include <assert.h>
+#include "../../rmutil/rmalloc.h"
 
 OpBase* NewMergeOp(RedisModuleCtx *ctx, Graph *g, QueryGraph *qg, const char *graph_name, ResultSet *result_set) {
-    OpMerge *op_merge = malloc(sizeof(OpMerge));
+    OpMerge *op_merge = rm_malloc(sizeof(OpMerge));
 
     op_merge->ctx = ctx;
     op_merge->g = g;

@@ -6,6 +6,7 @@
 */
 
 #include "aggregate.h"
+#include "../rmutil/rmalloc.h"
 
 AggCtx *Agg_Reduce(void *ctx, StepFunc f, ReduceFunc reduce) {
   AggCtx *ac = Agg_NewCtx(ctx);
@@ -15,7 +16,7 @@ AggCtx *Agg_Reduce(void *ctx, StepFunc f, ReduceFunc reduce) {
 }
 
 AggCtx *Agg_NewCtx(void *fctx) {
-    AggCtx *ac = malloc(sizeof(AggCtx));
+    AggCtx *ac = rm_malloc(sizeof(AggCtx));
     ac->err = NULL;
     ac->fctx = fctx;
     ac->result = SI_NullVal();

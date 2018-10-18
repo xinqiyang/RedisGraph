@@ -1,5 +1,6 @@
 #include "vector.h"
 #include <stdio.h>
+#include "rmalloc.h"
 
 inline int __vector_PushPtr(Vector *v, void *elem) {
   if (v->top == v->cap) {
@@ -70,7 +71,7 @@ int Vector_Resize(Vector *v, size_t newcap) {
 }
 
 Vector *__newVectorSize(size_t elemSize, size_t cap) {
-  Vector *vec = malloc(sizeof(Vector));
+  Vector *vec = rm_malloc(sizeof(Vector));
   vec->data = calloc(cap, elemSize);
   vec->top = 0;
   vec->elemSize = elemSize;

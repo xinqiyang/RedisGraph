@@ -6,6 +6,7 @@
 */
 
 #include "value.h"
+#include "rmutil/rmalloc.h"
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
@@ -271,7 +272,7 @@ int SI_LongVal_Cast(SIValue *v, SIType type) {
     v->doubleval = (double)v->longval;
     break;
   case T_STRING: {
-    char *buf = malloc(21);
+    char *buf = rm_malloc(21);
     snprintf(buf, 21, "%lld", (long long)v->longval);
     v->stringval = buf;
     break;
@@ -306,7 +307,7 @@ int SI_DoubleVal_Cast(SIValue *v, SIType type) {
     v->floatval = (float)v->doubleval;
     break;
   case T_STRING: {
-    char *buf = malloc(256);
+    char *buf = rm_malloc(256);
     snprintf(buf, 256, "%.17f", v->doubleval);
     v->stringval = buf;
     break;

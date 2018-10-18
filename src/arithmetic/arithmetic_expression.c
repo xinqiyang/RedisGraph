@@ -9,6 +9,7 @@
 #include "../util/triemap/triemap.h"
 #include "./aggregate.h"
 #include "./repository.h"
+#include "../rmutil/rmalloc.h"
 
 #include "assert.h"
 #include <math.h>
@@ -123,7 +124,7 @@ AR_ExpNode* AR_EXP_NewOpNode(char *func_name, int child_count) {
     node->type = AR_EXP_OP;    
     node->op.func_name = strdup(func_name);
     node->op.child_count = child_count;
-    node->op.children = (AR_ExpNode **)malloc(child_count * sizeof(AR_ExpNode*));
+    node->op.children = (AR_ExpNode **)rm_malloc(child_count * sizeof(AR_ExpNode*));
 
     /* Determine function type. */
     AR_Func func = AR_GetFunc(func_name);
