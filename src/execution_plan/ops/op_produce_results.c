@@ -28,7 +28,15 @@ ResultSetRecord *_ProduceResultsetRecord(ProduceResults* op, const Record r) {
     for(int i = 0; i < Vector_Size(op->return_elements); i++) {
         AR_ExpNode *ae;
         Vector_Get(op->return_elements, i, &ae);
-        resRec->values[i] = AR_EXP_Evaluate(ae, r);
+        SIValue val = AR_EXP_Evaluate(ae, r);
+        // Build interface for this
+        if (ae->type == AR_EXP_OPERAND && ae->operand.type == AR_EXP_VARIADIC &&
+            ae->operand.variadic.entity_prop == NULL) {
+            // Return element is a full entity, print its string representation.
+            resRec->values[i] = GraphEntity_ToString(val.ptrval);
+        } else {
+            resRec->values[i] = val;
+        }
     }
     return resRec;
 }

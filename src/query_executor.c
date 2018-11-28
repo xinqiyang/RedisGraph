@@ -23,7 +23,7 @@ static void _returnClause_ExpandCollapsedNodes(GraphContext *gc, AST_Query *ast)
       * 1. Scan through every arithmetic expression within the original
       * RETURN clause and add it to a temporary vector,
       * if we bump into an asterisks marker indicating we should expand
-      * all nodes, relations and paths within the MATCH clause, add thoese
+      * all nodes, relations and paths within the MATCH clause, add those
       * to the temporary vector.
       * 
       * 2. Scanning though the temporary vector we expand each collapsed entity
@@ -75,65 +75,7 @@ static void _returnClause_ExpandCollapsedNodes(GraphContext *gc, AST_Query *ast)
          * of AST_AR_EXP_OPERAND type, 
          * The operand type should be AST_AR_EXP_VARIADIC,
          * lastly property should be missing. */
-
-        if(exp->type == AST_AR_EXP_OPERAND &&
-            exp->operand.type == AST_AR_EXP_VARIADIC &&
-            exp->operand.variadic.property == NULL) {
-            
-            /* Return clause doesn't contains entity's label,
-             * Find collapsed entity's label. */
-            AST_GraphEntity *collapsed_entity = MatchClause_GetEntity(ast->matchNode, exp->operand.variadic.alias);
-
-            if(!collapsed_entity) {
-                // It is possible that the current alias
-                // represent an expression such as in the case of an unwind clause.
-                Vector_Push(expandReturnElements, ret_elem);
-                continue;
-            }
-
-            /* Find label's properties. */
-            LabelStoreType store_type = (collapsed_entity->t == N_ENTITY) ? STORE_NODE : STORE_EDGE;
-            LabelStore *store;
-                        
-            if(collapsed_entity->label) {
-                /* Collapsed entity has a label. */
-                store = GraphContext_GetStore(gc, collapsed_entity->label, store_type);
-            } else {
-                /* Entity does have a label, Consult with "ALL" store. */
-                store = GraphContext_AllStore(gc, store_type);
-            }
-
-            void *ptr = NULL;       /* Label store property value, (not in use). */
-            char *prop = NULL;      /* Entity property. */
-            tm_len_t prop_len = 0;  /* Length of entity's property. */
-            AST_ArithmeticExpressionNode *expanded_exp;
-            AST_ReturnElementNode *retElem;
-            if(!store || store->properties->cardinality == 0) {
-                /* Label store was not found or
-                 * label doesn't have any properties.
-                 * Create a fake return element. */
-                expanded_exp = New_AST_AR_EXP_ConstOperandNode(SI_ConstStringVal(""));
-                // Incase an alias is given use it, otherwise use the variable name.
-                if(ret_elem->alias) retElem = New_AST_ReturnElementNode(expanded_exp, ret_elem->alias);
-                else retElem = New_AST_ReturnElementNode(expanded_exp, exp->operand.variadic.alias);
-                Vector_Push(expandReturnElements, retElem);
-            } else {
-                TrieMapIterator *it = TrieMap_Iterate(store->properties, "", 0);
-                while(TrieMapIterator_Next(it, &prop, &prop_len, &ptr)) {
-                    prop[prop_len] = 0;
-                    /* Create a new return element foreach property. */
-                    expanded_exp = New_AST_AR_EXP_VariableOperandNode(collapsed_entity->alias, prop);
-                    retElem = New_AST_ReturnElementNode(expanded_exp, ret_elem->alias);
-                    Vector_Push(expandReturnElements, retElem);
-                }
-                TrieMapIterator_Free(it);
-            }
-
-            /* Discard collapsed return element. */
-            Free_AST_ReturnElementNode(ret_elem);
-        } else {
-            Vector_Push(expandReturnElements, ret_elem);
-        }
+        Vector_Push(expandReturnElements, ret_elem);
     }
     /* Override previous return clause. */
     Vector_Free(elementsToExpand);

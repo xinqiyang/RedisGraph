@@ -37,6 +37,30 @@ SIValue* GraphEntity_Get_Property(const GraphEntity *e, const char* key) {
 	return PROPERTY_NOTFOUND;
 }
 
+SIValue GraphEntity_ToString(const GraphEntity *e) {
+  if (!e) return SI_NullVal();
+
+  // Return label IFF we performed a label scan
+  int buflen = 1024;
+  int n = 0;
+  char *buf = rm_malloc(buflen * sizeof(char));
+  buf[n++] = '(';
+  buf[n++] = '{';
+	for(int i = 0; i < e->entity->prop_count; i++) {
+    if (buflen < n * 2) {
+      buflen *= 2;
+      buf = rm_realloc(buf, buflen * sizeof(char));
+    }
+    n += sprintf(buf + n, "%s: \'", e->entity->properties[i].name);
+    n += SIValue_ToString(e->entity->properties[i].value, buf + n, buflen - n);
+    buf[n++] = '\'';
+  }
+  buf[n++] = '}';
+  buf[n++] = ')';
+  buf[n] = '\0';
+  return SI_TransferStringVal(buf);
+}
+
 void FreeEntity(Entity *e) {
 	if(e->properties != NULL) {
 		for(int i = 0; i < e->prop_count; i++) free(e->properties[i].name);

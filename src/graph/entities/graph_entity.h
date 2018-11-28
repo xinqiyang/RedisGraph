@@ -53,6 +53,8 @@ void GraphEntity_Add_Properties(GraphEntity *ge, int prop_count, char **keys, SI
  * constant value PROPERTY_NOTFOUND. */
 SIValue* GraphEntity_Get_Property(const GraphEntity *e, const char* key);
 
+SIValue GraphEntity_ToString(const GraphEntity *e);
+
 /* Release all memory allocated by entity */
 void FreeEntity(Entity *e);
 

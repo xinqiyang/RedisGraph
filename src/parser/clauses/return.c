@@ -12,7 +12,7 @@ AST_ReturnElementNode* New_AST_ReturnElementNode(AST_ArithmeticExpressionNode *e
 	AST_ReturnElementNode *returnElementNode = (AST_ReturnElementNode*)malloc(sizeof(AST_ReturnElementNode));
 	returnElementNode->exp = exp;
 	returnElementNode->alias = NULL;
-    returnElementNode->asterisks = 0;
+	returnElementNode->asterisks = 0;
 
 	if(alias != NULL) returnElementNode->alias = strdup(alias);
 	
@@ -20,8 +20,8 @@ AST_ReturnElementNode* New_AST_ReturnElementNode(AST_ArithmeticExpressionNode *e
 }
 
 AST_ReturnElementNode* New_AST_ReturnElementExpandALL() {
-    AST_ReturnElementNode *returnElementNode = New_AST_ReturnElementNode(NULL, NULL);
-    returnElementNode->asterisks = 1;
+	AST_ReturnElementNode *returnElementNode = New_AST_ReturnElementNode(NULL, NULL);
+	returnElementNode->asterisks = 1;
 	return returnElementNode;
 }
 
@@ -29,7 +29,7 @@ AST_ReturnNode* New_AST_ReturnNode(Vector *returnElements, int distinct) {
 	AST_ReturnNode *returnNode = (AST_ReturnNode*)malloc(sizeof(AST_ReturnNode));
 	returnNode->returnElements = returnElements;
 	returnNode->distinct = distinct;
-    return returnNode;
+	return returnNode;
 }
 
 int ReturnClause_ContainsCollapsedNodes(const AST_ReturnNode *return_node) {
