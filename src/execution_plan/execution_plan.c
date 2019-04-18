@@ -464,6 +464,7 @@ ExecutionPlan* _NewExecutionPlan(RedisModuleCtx *ctx, ResultSet *result_set) {
         uint exp_count = array_len(ast->return_expressions);
         // TODO exps and aliases just separate the elements of ast->return_expressions,
         // which is dumb - change signatures to take ReturnElementNodes
+
         exps = array_new(AR_ExpNode*, exp_count);
         aliases = array_new(char*, exp_count);
         for (uint i = 0; i < exp_count; i ++) {
@@ -610,7 +611,6 @@ ExecutionPlan* NewExecutionPlan(RedisModuleCtx *ctx, GraphContext *gc, bool expl
         if(curr_plan->filter_tree) {
             Vector *sub_trees = FilterTree_SubTrees(curr_plan->filter_tree);
 
-            // TODO Re-introduce this functionality (or similar)
             /* For each filter tree find the earliest position along the execution
              * after which the filter tree can be applied. */
             for(int i = 0; i < Vector_Size(sub_trees); i++) {
