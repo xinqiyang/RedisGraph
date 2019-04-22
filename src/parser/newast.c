@@ -106,7 +106,7 @@ void _mapPatternIdentifiers(NEWAST *ast, const cypher_astnode_t *entity) {
         if (TrieMap_Find(ast->identifier_map, alias, strlen(alias)) != TRIEMAP_NOTFOUND) return;
     } else {
         // Make identifier for unaliased entities
-        asprintf(&alias, "anon_%u", id);
+        asprintf(&alias, "anon_%u", id); // TODO rethink this
     }
     // Build an arithmetic expression node representing this identifier
     AR_ExpNode *exp = _AR_Exp_NewIdentifier(alias, entity, id);
