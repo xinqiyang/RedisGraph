@@ -70,7 +70,7 @@ void _mapReturnAliases(NEWAST *ast) {
 // Capture node and relation identifiers from
 /* Populate a triemap with node and relation identifiers from MATCH, MERGE, and CREATE clauses
  * (and build anonymous identifiers when necessary). */
-void _mapPatternIdentifiers(NEWAST *ast, const cypher_astnode_t *entity, unsigned int *anon_id) {
+void _mapPatternIdentifiers(NEWAST *ast, const cypher_astnode_t *entity) {
     if (!entity) return;
 
     cypher_astnode_type_t type = cypher_astnode_type(entity);
@@ -93,23 +93,21 @@ void _mapPatternIdentifiers(NEWAST *ast, const cypher_astnode_t *entity, unsigne
         for(unsigned int i = 0; i < child_count; i++) {
             const cypher_astnode_t *child = cypher_astnode_get_child(entity, i);
             // Recursively continue searching
-            _mapPatternIdentifiers(ast, child, anon_id);
+            _mapPatternIdentifiers(ast, child);
         }
         return;
     }
+
+    // The identifier ID is bult from the number of identifiers in the map
+    unsigned int id = ast->identifier_map->cardinality;
 
     if (alias) {
         // Do nothing if entry is already mapped
         if (TrieMap_Find(ast->identifier_map, alias, strlen(alias)) != TRIEMAP_NOTFOUND) return;
     } else {
         // Make identifier for unaliased entities
-        // TODO once we're done with dual parsers, can build anon IDs
-        // out of triemap cardinality
-        asprintf(&alias, "anon_%u", *anon_id);
-        (*anon_id)++;
+        asprintf(&alias, "anon_%u", id);
     }
-    // The identifier ID is bult from the number of identifiers in the map
-    unsigned int id = ast->identifier_map->cardinality;
     // Build an arithmetic expression node representing this identifier
     AR_ExpNode *exp = _AR_Exp_NewIdentifier(alias, entity, id);
 
@@ -373,8 +371,7 @@ void NEWAST_BuildAliasMap(NEWAST *ast) {
     ast->defined_entities = array_new(cypher_astnode_t*, 1);
 
     // Get graph entity identifiers from MATCH, MERGE, and CREATE clauses.
-    unsigned int anon_id = 0;
-    _mapPatternIdentifiers(ast, ast->root, &anon_id);
+    _mapPatternIdentifiers(ast, ast->root);
 
     // Get aliases defined by UNWIND and RETURN...AS clauses
     _mapReturnAliases(ast);
