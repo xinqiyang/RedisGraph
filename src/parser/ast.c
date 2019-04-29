@@ -174,32 +174,6 @@ void _mapPatternIdentifiers(AST *ast, const cypher_astnode_t *entity, bool recor
     _AddOrConnectEntity(ast, entity, (char*)alias, record_children);
 }
 
-// TODO make an appropriate file just for functions that convert AST entities
-// into intermediate forms
-PropertyMap* AST_ConvertPropertiesMap(const AST *ast, const cypher_astnode_t *props) {
-    if (props == NULL) return NULL;
-    assert(cypher_astnode_type(props) == CYPHER_AST_MAP); // TODO add parameter support
-
-    uint prop_count = cypher_ast_map_nentries(props);
-
-    PropertyMap *map = malloc(sizeof(PropertyMap));
-    map->keys = malloc(prop_count * sizeof(char*));
-    map->values = malloc(prop_count * sizeof(SIValue));
-    map->property_count = prop_count;
-
-    for(uint prop_idx = 0; prop_idx < prop_count; prop_idx++) {
-        const cypher_astnode_t *ast_key = cypher_ast_map_get_key(props, prop_idx);
-        map->keys[prop_idx] = cypher_ast_prop_name_get_value(ast_key);
-
-        const cypher_astnode_t *ast_value = cypher_ast_map_get_value(props, prop_idx);
-        // TODO optimize
-        AR_ExpNode *value_exp = AR_EXP_FromExpression(ast, ast_value);
-        SIValue value = AR_EXP_Evaluate(value_exp, NULL);
-        map->values[prop_idx] = value; // TODO mismapping? map->values is an SIValue*
-    }
-    return map;
-}
-
 bool AST_ReadOnly(const cypher_astnode_t *query) {
     unsigned int num_clauses = cypher_astnode_nchildren(query);
     for (unsigned int i = 0; i < num_clauses; i ++) {
@@ -427,26 +401,6 @@ bool AST_ClauseContainsAggregation(const cypher_astnode_t *clause) {
     return aggregated;
 }
 
-AR_ExpNode** AST_GetOrderExpressions(const cypher_astnode_t *order_clause) {
-    assert(order_clause);
-    AST *ast = AST_GetFromTLS();
-
-    unsigned int nitems = cypher_ast_order_by_nitems(order_clause);
-    AR_ExpNode **order_exps = array_new(AR_ExpNode*, nitems);
-
-    for (unsigned int i = 0; i < nitems; i ++) {
-        const cypher_astnode_t *item = cypher_ast_order_by_get_item(order_clause, i);
-        const cypher_astnode_t *cypher_exp = cypher_ast_sort_item_get_expression(item);
-        AR_ExpNode *ar_exp = AR_EXP_FromExpression(ast, cypher_exp);
-        // TODO rec_idx?
-        order_exps = array_append(order_exps, ar_exp);
-        // TODO use
-        // bool ascending = cypher_ast_sort_item_is_ascending(item);
-    }
-
-    return order_exps;
-}
-
 void AST_BuildAliasMap(AST *ast) {
     // ast->identifier_map = NewTrieMap(); // Holds mapping between referred entities and IDs.
     ast->entity_map = NewTrieMap();
@@ -457,83 +411,6 @@ void AST_BuildAliasMap(AST *ast) {
 
     // Get aliases defined by UNWIND and RETURN...AS clauses
     // _mapReturnAliases(ast);
-}
-
-unsigned int AST_GetAliasID(const AST *ast, char *alias) {
-    AR_ExpNode *exp = TrieMap_Find(ast->entity_map, alias, strlen(alias));
-    return exp->record_idx;
-}
-
-void AST_MapEntityHash(const AST *ast, AST_IDENTIFIER identifier, AR_ExpNode *exp) {
-    TrieMap_Add(ast->entity_map, (char*)&identifier, sizeof(identifier), exp, TrieMap_DONT_CARE_REPLACE);
-}
-
-void AST_MapAlias(const AST *ast, char *alias, AR_ExpNode *exp) {
-    TrieMap_Add(ast->entity_map, alias, strlen(alias), exp, TrieMap_DONT_CARE_REPLACE);
-}
-
-unsigned int AST_GetEntityID(const AST *ast, const cypher_astnode_t *entity) {
-    AST_IDENTIFIER identifier = AST_EntityHash(entity);
-    AR_ExpNode *v = TrieMap_Find(ast->entity_map, (char*)&identifier, sizeof(identifier));
-    assert(v != TRIEMAP_NOTFOUND);
-    return v->operand.variadic.entity_alias_idx;
-}
-
-
-AR_ExpNode* AST_GetEntity(const AST *ast, const cypher_astnode_t *entity) {
-    AST_IDENTIFIER identifier = AST_EntityHash(entity);
-    AR_ExpNode *v = TrieMap_Find(ast->entity_map, (char*)&identifier, sizeof(identifier));
-    assert(v != TRIEMAP_NOTFOUND);
-    return v;
-}
-
-AR_ExpNode* AST_GetEntityFromAlias(const AST *ast, char *alias) {
-    void *v = TrieMap_Find(ast->entity_map, alias, strlen(alias));
-    if (v == TRIEMAP_NOTFOUND) return NULL;
-    return v;
-}
-
-AR_ExpNode* AST_GetEntityFromHash(const AST *ast, AST_IDENTIFIER id) {
-    void *v = TrieMap_Find(ast->entity_map, (char*)&id, sizeof(id));
-    if (v == TRIEMAP_NOTFOUND) return NULL;
-    return v;
-}
-
-AST_IDENTIFIER AST_EntityHash(const cypher_astnode_t *entity) {
-    return XXH64(&entity, sizeof(entity), 0);
-}
-
-size_t AST_AliasCount(const AST *ast) { // TODO remove
-    return ast->record_length;
-}
-
-unsigned int AST_GetEntityRecordIdx(const AST *ast, const cypher_astnode_t *entity) {
-    AR_ExpNode *exp = AST_GetEntity(ast, entity);
-    return exp->record_idx;
-}
-
-unsigned int AST_RecordLength(const AST *ast) {
-    return ast->record_length;
-}
-
-unsigned int AST_AddRecordEntry(AST *ast) {
-    // Increment Record length and return a valid record Index
-    return ast->record_length ++;
-}
-
-unsigned int AST_AddAnonymousRecordEntry(AST *ast) {
-    // Increment Record length and return a valid record Index
-    uint id = ast->record_length ++;
-    
-    // TODO which function?
-    AR_ExpNode *exp = calloc(1, sizeof(AR_ExpNode));
-    exp->type = AR_EXP_OPERAND;
-    exp->record_idx = id;
-    exp->operand.type = AR_EXP_VARIADIC;
-    exp->operand.variadic.entity_alias_idx = id;
-    ast->defined_entities = array_append(ast->defined_entities, exp);
-
-    return id;
 }
 
 AST* AST_GetFromTLS(void) {

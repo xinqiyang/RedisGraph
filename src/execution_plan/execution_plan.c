@@ -15,6 +15,7 @@
 #include "./optimizations/optimizer.h"
 #include "./optimizations/optimizations.h"
 #include "../arithmetic/algebraic_expression.h"
+#include "../parser/ast_build_op_contexts.h"
 
 /* Checks if parent has given child, if so returns 1
  * otherwise returns 0 */
@@ -302,6 +303,7 @@ void _ExecutionPlan_BuildTraversalOps(QueryGraph *qg, FT_FilterNode *ft, const c
         }
         for(int i = 0; i < expCount; i++) {
             if(exps[i]->operand_count == 0) continue;
+            AlgebraicExpression_ExtendRecord(exps[i]);
             if(exps[i]->minHops != 1 || exps[i]->maxHops != 1) {
                 op = NewCondVarLenTraverseOp(exps[i],
                                              exps[i]->minHops,
@@ -336,13 +338,13 @@ void _ExecutionPlan_BuildTraversalOps(QueryGraph *qg, FT_FilterNode *ft, const c
         for(int i = expCount-1; i >= 0; i--) {
             if(exps[i]->operand_count == 0) continue;
             AlgebraicExpression_Transpose(exps[i]);
+            AlgebraicExpression_ExtendRecord(exps[i]);
             if(exps[i]->minHops != 1 || exps[i]->maxHops != 1) {
                 op = NewCondVarLenTraverseOp(exps[i],
                                              exps[i]->minHops,
                                              exps[i]->maxHops,
                                              gc->g);
-            }
-            else {
+            } else {
                 op = NewCondTraverseOp(gc->g, exps[i]);
             }
             Vector_Push(traversals, op);
@@ -425,7 +427,12 @@ ExecutionPlan* _NewExecutionPlan(RedisModuleCtx *ctx, ResultSet *result_set) {
     // Set root operation
     const cypher_astnode_t *unwind_clause = AST_GetClause(ast->root, CYPHER_AST_UNWIND);
     if(unwind_clause) {
-        OpBase *opUnwind = NewUnwindOp(ast, unwind_clause);
+        AR_ExpNode **exps = AST_PrepareUnwindOp(unwind_clause);
+        // TODO rest doesn't belong here
+        uint record_len = AST_RecordLength(ast);
+        const char *alias = cypher_ast_identifier_get_name(cypher_ast_unwind_get_alias(unwind_clause));
+        uint record_idx = AST_GetAliasID(ast, (char*)alias);
+        OpBase *opUnwind = NewUnwindOp(record_len, record_idx, exps, (char*)alias);
         Vector_Push(ops, opUnwind);
     }
 
@@ -453,13 +460,19 @@ ExecutionPlan* _NewExecutionPlan(RedisModuleCtx *ctx, ResultSet *result_set) {
 
     const cypher_astnode_t *delete_clause = AST_GetClause(ast->root, CYPHER_AST_DELETE);
     if(delete_clause) {
-        OpBase *opDelete = NewDeleteOp(delete_clause, execution_plan->result_set);
+        uint *nodes_ref;
+        uint *edges_ref;
+        AST_PrepareDeleteOp(delete_clause, &nodes_ref, &edges_ref);
+        OpBase *opDelete = NewDeleteOp(nodes_ref, edges_ref, execution_plan->result_set);
         Vector_Push(ops, opDelete);
     }
 
     const cypher_astnode_t *set_clause = AST_GetClause(ast->root, CYPHER_AST_SET);
     if(set_clause) {
-        OpBase *op_update = NewUpdateOp(gc, execution_plan->result_set);
+        // Create a context for each update expression.
+        uint nitems;
+        EntityUpdateEvalCtx *update_exps = AST_PrepareUpdateOp(set_clause, &nitems);
+        OpBase *op_update = NewUpdateOp(gc, update_exps, nitems, execution_plan->result_set);
         Vector_Push(ops, op_update);
     }
 
@@ -515,7 +528,9 @@ ExecutionPlan* _NewExecutionPlan(RedisModuleCtx *ctx, ResultSet *result_set) {
         if (limit_clause) limit = skip + AST_ParseIntegerNode(limit_clause);
 
         if (order_clause) {
-            op = NewSortOp(order_clause, limit);
+            int direction;
+            AR_ExpNode **expressions = AST_PrepareSortOp(order_clause, &direction);
+            op = NewSortOp(expressions, direction, limit);
             Vector_Push(ops, op);
         }
 

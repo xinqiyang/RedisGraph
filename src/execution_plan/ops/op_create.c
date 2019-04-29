@@ -369,7 +369,7 @@ Record OpCreateConsume(OpBase *opBase) {
     // No child operation to call.
     if(!op->op.childCount) {
         AST *ast = op->ast;
-        r = Record_New(AST_AliasCount(ast));
+        r = Record_New(AST_RecordLength(ast));
         /* Create entities. */
         _CreateNodes(op, r);
         _CreateEdges(op, r);

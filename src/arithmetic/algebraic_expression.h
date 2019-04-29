@@ -92,6 +92,8 @@ void AlgebraicExpression_RemoveTerm(AlgebraicExpression *ae, int idx, AlgebraicE
  * directly accessing expression transpose flag is forbidden. */
 void AlgebraicExpression_Transpose(AlgebraicExpression *ae);
 
+void AlgebraicExpression_ExtendRecord(AlgebraicExpression *ae);
+
 void AlgebraicExpression_Free(AlgebraicExpression* ae);
 
 #endif

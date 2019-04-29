@@ -54,6 +54,8 @@ static void _CommitNodes(OpMerge *op, Record r) {
 
 
         // A CYPHER_AST_MAP node, a CYPHER_AST_PARAMETER node, or null
+        // _AddNodeProperties(op, schema, n, op->node_properties[i]);
+        // TODO Standardize this, but why is it so different from op create?
         const cypher_astnode_t *props = cypher_ast_node_pattern_get_properties(ast_node);
         if(props) {
             cypher_astnode_type_t prop_type = cypher_astnode_type(props);

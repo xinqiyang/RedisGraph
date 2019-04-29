@@ -13,7 +13,7 @@ OpBase* NewIndexScanOp(Graph *g, Node *node, IndexIter *iter) {
   indexScan->iter = iter;
   AST *ast = AST_GetFromTLS();
   indexScan->nodeRecIdx = AST_GetAliasID(ast, node->alias);
-  indexScan->recLength = AST_AliasCount(ast);
+  indexScan->recLength = AST_RecordLength(ast);
 
   // Set our Op operations
   OpBase_Init(&indexScan->op);

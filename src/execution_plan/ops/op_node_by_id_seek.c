@@ -52,7 +52,7 @@ OpBase* NewOpNodeByIdSeekOp
     if(!minInclusive && minId != ID_RANGE_UNBOUND) op_nodeByIdSeek->currentId++;
 
     op_nodeByIdSeek->nodeRecIdx = nodeRecIdx;
-    op_nodeByIdSeek->recLength = AST_AliasCount(ast);
+    op_nodeByIdSeek->recLength = AST_RecordLength(ast);
 
     OpBase_Init(&op_nodeByIdSeek->op);
     op_nodeByIdSeek->op.name = "NodeByIdSeek";

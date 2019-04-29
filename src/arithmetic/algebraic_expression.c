@@ -215,7 +215,7 @@ static inline void _AlgebraicExpression_Execute_MUL(GrB_Matrix C, GrB_Matrix A, 
         Rg_structured_bool, // Semiring
         A,                  // First matrix
         B,                  // Second matrix
-        desc                // Descriptor        
+        desc                // Descriptor
     );
     assert(res == GrB_SUCCESS);
 }
@@ -374,7 +374,7 @@ AlgebraicExpression **AlgebraicExpression_FromPath(const AST *ast, const QueryGr
 }
 
 /* Evaluates an algebraic expression,
- * evaluation is done right to left due to matrix CSC representation 
+ * evaluation is done right to left due to matrix CSC representation
  * the right most operand in the expression is a tiny extremely sparse matrix
  * this allows us to avoid computing multiplications of large matrices.
  * In the case an operand is marked for transpose, we will perform
@@ -400,11 +400,11 @@ void AlgebraicExpression_Execute(AlgebraicExpression *ae, GrB_Matrix res) {
         rightTerm = operands[operand_count-1];
         leftTerm = operands[operand_count-2];
 
-        /* Incase we're required to transpose left hand side operand 
+        /* Incase we're required to transpose left hand side operand
          * perform transpose once and update original expression. */
         if(leftTerm.transpose) {
             GrB_Matrix t = leftTerm.operand;
-            /* Graph matrices are immutable, create a new matrix. 
+            /* Graph matrices are immutable, create a new matrix.
              * and transpose. */
             if(!leftTerm.free) {
                 GrB_Index cols;
@@ -696,6 +696,22 @@ static GrB_Matrix _AlgebraicExpression_Eval(AlgebraicExpressionNode *exp, GrB_Ma
 
 void AlgebraicExpression_Eval(AlgebraicExpressionNode *exp, GrB_Matrix res) {
     _AlgebraicExpression_Eval(exp, res);
+}
+
+void AlgebraicExpression_ExtendRecord(AlgebraicExpression *ae) {
+    AST *ast = AST_GetFromTLS();
+    if (ae->src_node_idx == NOT_IN_RECORD) {
+        // Anonymous node - make space for it in the Record
+        ae->src_node_idx = AST_AddAnonymousRecordEntry(ast);
+    }
+
+    if (ae->dest_node_idx == NOT_IN_RECORD) {
+        ae->dest_node_idx = AST_AddAnonymousRecordEntry(ast);
+    }
+
+    if (ae->edge && ae->edge_idx == NOT_IN_RECORD) {
+        ae->edge_idx = AST_AddAnonymousRecordEntry(ast);
+    }
 }
 
 static void _AlgebraicExpressionNode_UniqueNodes(AlgebraicExpressionNode *root, AlgebraicExpressionNode ***uniqueNodes) {

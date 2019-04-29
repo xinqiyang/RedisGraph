@@ -160,7 +160,7 @@ QueryGraph* BuildQueryGraph(const GraphContext *gc, const AST *ast) {
     // If so, re-introduce similar logic.
     size_t node_count;
     size_t edge_count;
-    node_count = edge_count = AST_AliasCount(ast);
+    node_count = edge_count = AST_RecordLength(ast);
     // _Determine_Graph_Size(old_ast, &node_count, &edge_count);
     QueryGraph *qg = QueryGraph_New(node_count, edge_count);
 

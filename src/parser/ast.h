@@ -49,16 +49,9 @@ typedef struct {
 } ReturnElementNode; // TODO Should be able to remove this struct
 
 typedef struct {
-    const char **keys;
-    SIValue *values;
-    int property_count;
-} PropertyMap;
-
-typedef struct {
     const cypher_astnode_t *root;
     // Extensible array of entities described in MATCH, MERGE, and CREATE clauses
     AR_ExpNode **defined_entities;
-    // TrieMap *identifier_map;
     TrieMap *entity_map;
     ReturnElementNode **return_expressions;
     unsigned int order_expression_count; // TODO maybe use arr.h instead
@@ -68,8 +61,6 @@ typedef struct {
 
 // AST clause validations.
 AST_Validation AST_Validate(const cypher_astnode_t *ast, char **reason);
-
-PropertyMap* AST_ConvertPropertiesMap(const AST *ast, const cypher_astnode_t *props);
 
 // Checks if AST represent a read only query.
 bool AST_ReadOnly(const cypher_astnode_t *query);
@@ -123,8 +114,6 @@ void AST_ConnectEntity(const AST *ast, const cypher_astnode_t *entity, AR_ExpNod
 AR_ExpNode* AST_GetEntityFromHash(const AST *ast, AST_IDENTIFIER id);
 
 AST_IDENTIFIER AST_EntityHash(const cypher_astnode_t *entity);
-
-size_t AST_AliasCount(const AST *ast);
 
 unsigned int AST_GetEntityRecordIdx(const AST *ast, const cypher_astnode_t *entity);
 

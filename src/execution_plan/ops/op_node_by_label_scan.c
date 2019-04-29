@@ -15,7 +15,7 @@ OpBase *NewNodeByLabelScanOp(GraphContext *gc, Node *node, unsigned int node_idx
 
     AST *ast = AST_GetFromTLS();
     nodeByLabelScan->nodeRecIdx = node_idx;
-    nodeByLabelScan->recLength = AST_AliasCount(ast);
+    nodeByLabelScan->recLength = AST_RecordLength(ast);
 
     /* Find out label matrix ID. */
     Schema *schema = GraphContext_GetSchema(gc, node->label, SCHEMA_NODE);
