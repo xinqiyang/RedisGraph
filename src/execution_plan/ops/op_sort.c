@@ -122,7 +122,7 @@ int _get_order(const cypher_astnode_t *order_clause) {
 OpBase* NewSortOp(const cypher_astnode_t *order_clause, unsigned int limit) {
     OpSort *sort = malloc(sizeof(OpSort));
     sort->offset = 0;
-    sort->expressions = NEWAST_GetOrderExpressions(order_clause);
+    sort->expressions = AST_GetOrderExpressions(order_clause);
     // TODO direction should be specifiable per order entity; combine with GetOrderExpressions
     sort->direction = _get_order(order_clause);
     sort->heap = NULL;

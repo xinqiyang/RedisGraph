@@ -160,7 +160,7 @@ static void _CreateEntities(OpMerge *op, Record r) {
 OpBase* NewMergeOp(GraphContext *gc, const cypher_astnode_t *clause, ResultSet *result_set) {
     OpMerge *op_merge = malloc(sizeof(OpMerge));
     op_merge->gc = gc;
-    op_merge->ast = NEWAST_GetFromTLS();
+    op_merge->ast = AST_GetFromTLS();
     op_merge->clause = clause;
     op_merge->result_set = result_set;
     op_merge->matched = false;
@@ -197,7 +197,7 @@ Record OpMergeConsume(OpBase *opBase) {
         if(op->matched) return r;
 
         // No previous match, create MERGE pattern.
-        r = Record_New(NEWAST_RecordLength(op->ast));
+        r = Record_New(AST_RecordLength(op->ast));
         _CreateEntities(op, r);
         op->created = true;
     }

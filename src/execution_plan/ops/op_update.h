@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
     OpBase op;
-    NEWAST *ast;
+    AST *ast;
     GraphContext *gc;
     ResultSet *result_set;
 

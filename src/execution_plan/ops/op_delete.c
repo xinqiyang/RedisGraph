@@ -38,7 +38,7 @@ OpBase* NewDeleteOp(const cypher_astnode_t *delete_clause, ResultSet *result_set
     OpDelete *op_delete = malloc(sizeof(OpDelete));
 
     op_delete->gc = GraphContext_GetFromTLS();
-    NEWAST *ast = NEWAST_GetFromTLS();
+    AST *ast = AST_GetFromTLS();
 
     uint delete_count = cypher_ast_delete_nexpressions(delete_clause);
     uint *nodes_to_delete = array_new(uint, delete_count);
@@ -48,7 +48,7 @@ OpBase* NewDeleteOp(const cypher_astnode_t *delete_clause, ResultSet *result_set
         const cypher_astnode_t *ast_expr = cypher_ast_delete_get_expression(delete_clause, i);
         assert(cypher_astnode_type(ast_expr) == CYPHER_AST_IDENTIFIER);
         const char *alias = cypher_ast_identifier_get_name(ast_expr);
-        AR_ExpNode *entity = NEWAST_GetEntityFromAlias(ast, (char*)alias);
+        AR_ExpNode *entity = AST_GetEntityFromAlias(ast, (char*)alias);
         assert(entity);
         uint id = entity->record_idx;
         assert(id != NOT_IN_RECORD);

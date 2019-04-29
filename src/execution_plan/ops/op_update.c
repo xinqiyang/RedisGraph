@@ -10,8 +10,8 @@
 #include "../../arithmetic/arithmetic_expression.h"
 
 /* Build an evaluation context foreach update expression. */
-static void _BuildUpdateEvalCtx(OpUpdate* op, NEWAST *ast) {
-    const cypher_astnode_t *set_clause = NEWAST_GetClause(ast->root, CYPHER_AST_SET);
+static void _BuildUpdateEvalCtx(OpUpdate* op, AST *ast) {
+    const cypher_astnode_t *set_clause = AST_GetClause(ast->root, CYPHER_AST_SET);
     assert(set_clause);
     unsigned int nitems = cypher_ast_set_nitems(set_clause);
     op->update_expressions_count = nitems;
@@ -40,7 +40,7 @@ static void _BuildUpdateEvalCtx(OpUpdate* op, NEWAST *ast) {
         /* Track all required information to perform an update. */
         op->update_expressions[i].attribute = cypher_ast_prop_name_get_value(prop);
         op->update_expressions[i].exp = AR_EXP_FromExpression(ast, val_to_set);
-        op->update_expressions[i].entityRecIdx = NEWAST_GetAliasID(ast, entity->operand.variadic.entity_alias);
+        op->update_expressions[i].entityRecIdx = AST_GetAliasID(ast, entity->operand.variadic.entity_alias);
     }
 }
 
@@ -187,7 +187,7 @@ static Record _handoff(OpUpdate* op) {
 OpBase* NewUpdateOp(GraphContext *gc, ResultSet *result_set) {
     OpUpdate* op_update = calloc(1, sizeof(OpUpdate));
     op_update->gc = gc;
-    NEWAST *ast = NEWAST_GetFromTLS();
+    AST *ast = AST_GetFromTLS();
     op_update->ast = ast;
     op_update->result_set = result_set;
 

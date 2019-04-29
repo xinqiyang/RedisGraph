@@ -9,7 +9,7 @@
 
 #include "../graph/query_graph.h"
 #include "../graph/graph.h"
-#include "../parser/newast.h"
+#include "../parser/ast.h"
 
 // Matrix, vector operations.
 typedef enum {
@@ -74,7 +74,7 @@ typedef struct {
 } AlgebraicExpression;
 
 /* Construct an algebraic expression from a path. */
-AlgebraicExpression **AlgebraicExpression_FromPath(const NEWAST *ast, const QueryGraph *q, const cypher_astnode_t *path, size_t *exp_count);
+AlgebraicExpression **AlgebraicExpression_FromPath(const AST *ast, const QueryGraph *q, const cypher_astnode_t *path, size_t *exp_count);
 
 /* Executes given expression. */
 void AlgebraicExpression_Execute(AlgebraicExpression *ae, GrB_Matrix res);
