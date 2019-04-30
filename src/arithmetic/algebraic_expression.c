@@ -131,8 +131,7 @@ AlgebraicExpression **_AlgebraicExpression_Intermediate_Expressions(const AST *a
     Node *dest = NULL;
     Node *src = NULL;
     Edge *e = NULL;
-    const cypher_astnode_t *ast_src = NULL;
-    const cypher_astnode_t *ast_dest = NULL;
+    uint dest_node_idx;
 
     AlgebraicExpression *iexp = _AE_MUL(exp->operand_count);
     iexp->src_node = exp->src_node;
@@ -152,7 +151,7 @@ AlgebraicExpression **_AlgebraicExpression_Intermediate_Expressions(const AST *a
 
         AR_ExpNode *expr = AST_GetEntity(ast, ast_rel);
         /* If edge is referenced, set expression edge pointer. */
-        if (expr != NULL && expr->record_idx != NOT_IN_RECORD && expr->operand.variadic.entity_alias) { // TODO what is actually necessary?
+        if (expr->record_idx != NOT_IN_RECORD && expr->operand.variadic.entity_alias) { // TODO what is actually necessary?
             iexp->edge = e;
             iexp->relation_ids = _setup_traversed_relations(ast_rel);
             if (expr->record_idx == NOT_IN_RECORD) {
@@ -180,15 +179,12 @@ AlgebraicExpression **_AlgebraicExpression_Intermediate_Expressions(const AST *a
         }
 
         if (transpose) {
+            // TODO seemingly no need to modify record IDs
             dest = e->src;
             src = e->dest;
-            ast_dest = cypher_ast_pattern_path_get_element(path, i - 1);
-            ast_src = cypher_ast_pattern_path_get_element(path, i + 1);
         } else {
             dest = e->dest;
             src = e->src;
-            ast_dest = cypher_ast_pattern_path_get_element(path, i + 1);
-            ast_src = cypher_ast_pattern_path_get_element(path, i - 1);
         }
 
         if(operandIdx == 0 && src->mat) {
@@ -204,21 +200,24 @@ AlgebraicExpression **_AlgebraicExpression_Intermediate_Expressions(const AST *a
         }
 
         // Don't build intermediate expression for non-intermediate nodes (not first or last)
-        if (intermediate_node(dest_idx, nelems) == false) continue;
+        if (intermediate_node(i + 1, nelems) == false) continue;
 
+        dest_node_idx = AST_GetEntityRecordIdx(ast, cypher_ast_pattern_path_get_element(path, i + 1));
         // Don't build intermediate expression if destination node is not referenced
-        if (AST_GetEntityRecordIdx(ast, ast_dest) == NOT_IN_RECORD) continue;
+        if (dest_node_idx == NOT_IN_RECORD) continue;
 
         // Finalize current expression.
         iexp->dest_node = dest;
+        iexp->dest_node_idx = dest_node_idx;
+
 
         /* Create a new algebraic expression. */
         iexp = _AE_MUL(exp->operand_count - operandIdx);
         iexp->operand_count = 0;
         iexp->src_node = expressions[expIdx-1]->dest_node;
+        iexp->src_node_idx = expressions[expIdx-1]->dest_node_idx;
         iexp->dest_node = exp->dest_node;
-        iexp->src_node_idx = AST_GetEntityRecordIdx(ast, ast_src);
-        iexp->dest_node_idx = AST_GetEntityRecordIdx(ast, ast_dest);
+        iexp->dest_node_idx = exp->dest_node_idx;
         iexp->edge_idx = expr->record_idx;
         expressions[expIdx++] = iexp;
     }
