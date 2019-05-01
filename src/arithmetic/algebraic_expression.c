@@ -50,6 +50,20 @@ AlgebraicExpression *_AE_MUL(size_t operand_cap) {
     ae->maxHops = 1;
     return ae;
 }
+
+AlgebraicExpression* _NewAlgebraicExpression(uint operand_count, Node *src, Node *dest, Edge *e, uint src_idx, uint dest_idx, uint edge_idx) {
+    AlgebraicExpression *exp = _AE_MUL(operand_count);
+    exp->operand_count = 0;
+    exp->src_node = src;
+    exp->dest_node = dest;
+    exp->edge = e;
+    exp->src_node_idx = src_idx;
+    exp->dest_node_idx = dest_idx;
+    exp->edge_idx = edge_idx;
+
+    return exp;
+}
+
 /* Variable length expression must contain only a single operand, the edge being
  * traversed multiple times, in cases such as (:labelA)-[e*]->(:labelB) both label A and B
  * are applied via a label matrix operand, this function migrates A and B from a
@@ -84,12 +98,10 @@ AlgebraicExpression** _AlgebraicExpression_IsolateVariableLenExps(AlgebraicExpre
             AlgebraicExpression_RemoveTerm(exp, 0, &op);
 
             /* Create a new expression. */
-            AlgebraicExpression *newExp = _AE_MUL(1);
-            newExp->src_node = exp->src_node;
-            newExp->dest_node = exp->src_node; // ?
-            // newExp->dest_node = exp->dest_node;
-            // newExp->src_node_idx = exp->src_node_idx;
-            // newExp->dest_node_idx = exp->dest_node_idx;
+            AlgebraicExpression *newExp = _NewAlgebraicExpression(2, exp->src_node, exp->dest_node, exp->edge, exp->src_node_idx, exp->dest_node_idx, exp->edge_idx);
+            newExp->minHops = exp->minHops;
+            newExp->maxHops = exp->maxHops;
+            newExp->relation_ids = exp->relation_ids;
             AlgebraicExpression_PrependTerm(newExp, op.operand, op.transpose, op.free);
             res[newExpCount++] = newExp;
         }
@@ -107,12 +119,10 @@ AlgebraicExpression** _AlgebraicExpression_IsolateVariableLenExps(AlgebraicExpre
             if(expIdx < *expCount-1 && expressions[expIdx+1]->minHops != expressions[expIdx+1]->maxHops) {
                 AlgebraicExpression_PrependTerm(expressions[expIdx+1], op.operand, op.transpose, op.free);
             } else {
-                AlgebraicExpression *newExp = _AE_MUL(1);
-                newExp->src_node = exp->dest_node;
-                newExp->dest_node = exp->dest_node;
-                newExp->src_node_idx = exp->src_node_idx;
-                // newExp->dest_node_idx = exp->dest_node_idx;
-                newExp->edge_idx = exp->edge_idx;
+                AlgebraicExpression *newExp = _NewAlgebraicExpression(2, exp->src_node, exp->dest_node, exp->edge, exp->src_node_idx, exp->dest_node_idx, exp->edge_idx);
+                newExp->minHops = exp->minHops;
+                newExp->maxHops = exp->maxHops;
+                newExp->relation_ids = exp->relation_ids;
                 AlgebraicExpression_PrependTerm(newExp, op.operand, op.transpose, op.free);
                 res[newExpCount++] = newExp;
             }
@@ -218,13 +228,11 @@ AlgebraicExpression **_AlgebraicExpression_Intermediate_Expressions(const AST *a
 
 
         /* Create a new algebraic expression. */
-        iexp = _AE_MUL(exp->operand_count - operandIdx);
-        iexp->operand_count = 0;
-        iexp->src_node = expressions[expIdx-1]->dest_node;
-        iexp->src_node_idx = expressions[expIdx-1]->dest_node_idx;
-        iexp->dest_node = exp->dest_node;
-        iexp->dest_node_idx = exp->dest_node_idx;
-        iexp->edge_idx = expr->record_idx;
+        AlgebraicExpression *prev_exp = expressions[expIdx-1];
+        // TODO ick
+        iexp = _NewAlgebraicExpression(exp->operand_count - operandIdx,
+                                       prev_exp->dest_node, exp->dest_node, exp->edge,
+                                       prev_exp->dest_node_idx, exp->dest_node_idx, expr->record_idx);
         expressions[expIdx++] = iexp;
     }
 
